@@ -58,7 +58,7 @@ export function SortableBlock({
         <button
           type="button"
           onClick={onRemove}
-          className="mt-2.5 p-1 opacity-0 group-hover:opacity-100 transition-opacity text-outline/50 hover:text-error shrink-0"
+          className="mt-2.5 p-1 cursor-pointer opacity-0 group-hover:opacity-100 rounded-full active:bg-primary active:text-white hover:bg-gray-200 transition-opacity text-outline/50 hover:text-error shrink-0"
           title="Remove block"
         >
           <MdDeleteOutline size={18} />

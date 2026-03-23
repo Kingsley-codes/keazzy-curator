@@ -42,10 +42,10 @@ export function ImageBlockEditor({ block, onUpdate }: Props) {
             key={l}
             type="button"
             onClick={() => setLayout(l)}
-            className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm transition-colors ${
+            className={`text-[10px] cursor-pointer font-bold uppercase tracking-widest px-3 py-1 rounded-sm transition-colors ${
               block.layout === l
-                ? "bg-primary text-on-primary"
-                : "bg-surface-container text-outline hover:text-primary"
+                ? "bg-primary text-gray-100"
+                : "bg-gray-50 text-outline hover:bg-gray-200"
             }`}
           >
             {l === "single" ? "Single" : "Side by Side"}

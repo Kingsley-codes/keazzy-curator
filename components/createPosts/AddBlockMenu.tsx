@@ -102,7 +102,7 @@ function PortalDropdown({ anchorRef, onAdd, onClose }: PortalDropdownProps) {
             onAdd(opt.type);
             onClose();
           }}
-          className="flex items-center gap-2.5 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-surface-container transition-colors w-full text-left"
+          className="flex cursor-pointer hover:bg-gray-200 items-center gap-2.5 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-surface-container transition-colors w-full text-left"
         >
           {opt.icon}
           {opt.label}
@@ -130,7 +130,7 @@ export function AddBlockMenu({
           ref={anchorRef}
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="flex items-center hover:bg-gray-300 px-1 gap-1 text-[10px] font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors py-1"
+          className="flex items-center cursor-pointer hover:bg-gray-300 px-1 gap-1 text-[10px] font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors py-1"
         >
           <MdAdd size={14} />
           Add block
@@ -160,7 +160,7 @@ export function AddBlockMenu({
                 onBold();
               }}
               title="Bold — select text in a paragraph first"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:bg-primary hover:text-on-primary transition-colors rounded-sm"
+              className="flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:bg-gray-200 text-gray-900 active:text-white active:bg-primary transition-colors rounded-sm"
             >
               <MdFormatBold size={15} />
               <span>Bold</span>
@@ -174,7 +174,7 @@ export function AddBlockMenu({
                 onItalic();
               }}
               title="Italic — select text in a paragraph first"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:bg-primary hover:text-on-primary transition-colors rounded-sm"
+              className="flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:bg-gray-200 text-gray-900 active:text-white active:bg-primary transition-colors rounded-sm"
             >
               <MdFormatItalic size={15} />
               <span>Italic</span>
@@ -192,7 +192,7 @@ export function AddBlockMenu({
           type="button"
           onClick={() => onAdd(opt.type)}
           title={opt.label}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:bg-primary hover:text-on-primary transition-colors rounded-sm"
+          className="flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant active:bg-primary active:text-white hover:bg-gray-200 hover:text-gray-900 active: transition-colors rounded-sm"
         >
           {opt.icon}
           <span>{opt.label}</span>
@@ -201,3 +201,14 @@ export function AddBlockMenu({
     </div>
   );
 }
+
+/*
+the italics and bold on the main toolbar do not work, but the popup toolbars work
+
+when i say the popup toolbars work, what i mean is that they add "**" and "_" respectively to the words when i select them. but that's not what i want. 
+
+what i want is that the boldened or italicized words actually render as such, and clicking the icons again for such words undo the bold or italics
+
+also, the floating icons should sync with the main toolbar, such that, for example, when an italicized word is selected, both the floating toolbar and main toolbar show that the word is italicized
+
+*/

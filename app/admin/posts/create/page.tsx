@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PostContent } from "@/types/content";
 import { PostEditor } from "@/components/createPosts/PostEditor";
 import Image from "next/image";
+import { MdAddPhotoAlternate } from "react-icons/md";
 
 interface PostForm {
   title: string;
@@ -98,7 +99,7 @@ export default function CreatePostPage() {
     <main className="max-w-4xl mx-auto px-6 pt-32 pb-24">
       {/* Page Header */}
       <div className="mb-12">
-        <div className="inline-block bg-primary text-on-primary px-6 py-1 text-[10px] font-bold tracking-[0.2em] uppercase mb-6">
+        <div className="inline-block bg-primary text-gray-100 px-6 py-1 text-[10px] font-bold tracking-[0.2em] uppercase mb-6 rounded-sm">
           New Post
         </div>
         <h1 className="font-headline text-5xl text-primary leading-tight">
@@ -207,9 +208,7 @@ export default function CreatePostPage() {
             </div>
           ) : (
             <label className="flex flex-col items-center justify-center aspect-21/9 border border-dashed border-outline/30 cursor-pointer hover:bg-surface-container-low transition-colors">
-              <span className="material-symbols-outlined text-outline text-4xl mb-2">
-                add_photo_alternate
-              </span>
+              <MdAddPhotoAlternate className="w-20 h-20" />
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-outline">
                 Click to upload hero image
               </span>
@@ -249,7 +248,7 @@ export default function CreatePostPage() {
             type="button"
             onClick={() => handleSubmit("draft")}
             disabled={isSubmitting}
-            className="px-10 py-3 border border-outline/30 text-xs font-bold uppercase tracking-widest text-primary hover:bg-surface-container-low transition-colors disabled:opacity-40"
+            className="px-10 py-3 border rounded-sm border-outline/30 text-xs font-bold uppercase tracking-widest text-primary hover:bg-gray-800 hover:text-gray-100 transition-colors disabled:opacity-40"
           >
             {isSubmitting ? "Saving..." : "Save Draft"}
           </button>
@@ -257,7 +256,7 @@ export default function CreatePostPage() {
             type="button"
             onClick={() => handleSubmit("published")}
             disabled={isSubmitting}
-            className="px-10 py-3 bg-primary text-on-primary text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-40"
+            className="px-10 py-3 bg-primary text-gray-100 rounded-sm text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-40"
           >
             {isSubmitting ? "Publishing..." : "Publish"}
           </button>
