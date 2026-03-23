@@ -19,7 +19,7 @@ import { createBlock, blocksToJSON, safeBlocks } from "./blockHelpers";
 import { SortableBlock } from "./SortableBlock";
 import { AddBlockMenu } from "./AddBlockMenu";
 import { Block, BlockType } from "@/types/editorTypes";
-import { FormatContext } from "./FormatContext";
+import { FormatContext, FormatState } from "./FormatContext";
 
 interface PostEditorProps {
   onChange: (json: PostContent) => void;
@@ -27,9 +27,12 @@ interface PostEditorProps {
 
 export function PostEditor({ onChange }: PostEditorProps) {
   const [blocks, setBlocks] = useState<Block[]>([createBlock("paragraph")]);
+  const [formatState, setFormatState] = useState<FormatState>({
+    isBold: false,
+    isItalic: false,
+  });
 
-  // Holds a ref to the currently focused block's wrap function
-  const formatterRef = useRef<(marker: string) => void>(() => {});
+  const formatterRef = useRef<(type: "bold" | "italic") => void>(() => {});
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -74,17 +77,20 @@ export function PostEditor({ onChange }: PostEditorProps) {
   return (
     <FormatContext.Provider
       value={{
-        triggerFormat: (marker) => formatterRef.current(marker),
+        triggerFormat: (type) => formatterRef.current(type),
         registerFormatter: (fn) => {
           formatterRef.current = fn;
         },
+        formatState,
+        reportFormatState: setFormatState,
       }}
     >
       <div className="border border-outline/20 rounded-sm overflow-hidden bg-surface">
         <AddBlockMenu
           onAdd={(type) => addBlock(type)}
-          onBold={() => formatterRef.current("**")}
-          onItalic={() => formatterRef.current("_")}
+          onBold={() => formatterRef.current("bold")}
+          onItalic={() => formatterRef.current("italic")}
+          formatState={formatState}
         />
 
         <div className="px-4 py-4 min-h-80">

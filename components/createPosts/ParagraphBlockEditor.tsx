@@ -1,9 +1,10 @@
 // components/editor/blocks/ParagraphBlockEditor.tsx
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { FormatToolbar } from "./FormatToolbar";
 import { ParagraphBlock } from "@/types/editorTypes";
+import { useFormatContext } from "./FormatContext";
 
 interface Props {
   block: ParagraphBlock;
@@ -11,75 +12,123 @@ interface Props {
 }
 
 export function ParagraphBlockEditor({ block, onUpdate }: Props) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const divRef = useRef<HTMLDivElement>(null);
+  const { registerFormatter, reportFormatState } = useFormatContext();
+
   const [toolbarCoords, setToolbarCoords] = useState<{
     top: number;
     left: number;
   } | null>(null);
-  const [hasSelection, setHasSelection] = useState(false);
+  const [localFormats, setLocalFormats] = useState({
+    isBold: false,
+    isItalic: false,
+  });
 
-  const checkSelection = useCallback(() => {
-    const el = textareaRef.current;
-    if (!el) return;
-    const { selectionStart, selectionEnd } = el;
-    if (selectionStart === selectionEnd) {
-      setToolbarCoords(null);
-      setHasSelection(false);
-      return;
-    }
-    setHasSelection(true);
-    const rect = el.getBoundingClientRect();
-    setToolbarCoords({
-      top: rect.top - 44,
-      left: rect.left + rect.width / 2 - 52,
-    });
+  // ── Sync initial content into the DOM once on mount only ────────────────
+  // After that, the DOM is the source of truth (contenteditable).
+  // We use a ref to avoid re-setting innerHTML on every parent re-render,
+  // which would destroy the caret position.
+  const initialised = useRef(false);
+  useEffect(() => {
+    const el = divRef.current;
+    if (!el || initialised.current) return;
+    initialised.current = true;
+    el.innerHTML = block.content ?? "";
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const wrap = useCallback(
-    (marker: string) => {
-      const el = textareaRef.current;
+  // ── Apply bold or italic via execCommand ─────────────────────────────────
+  const applyFormat = useCallback(
+    (type: "bold" | "italic") => {
+      const el = divRef.current;
       if (!el) return;
-      const { selectionStart: start, selectionEnd: end } = el;
-      const selected = block.content.slice(start, end);
-      const before = block.content.slice(0, start);
-      const after = block.content.slice(end);
-      const isWrapped =
-        selected.startsWith(marker) && selected.endsWith(marker);
-      const newValue = isWrapped
-        ? before + selected.slice(marker.length, -marker.length) + after
-        : before + marker + selected + marker + after;
-      onUpdate({ content: newValue });
-      setToolbarCoords(null);
-      setHasSelection(false);
+      el.focus();
+      document.execCommand(type, false);
+      // Persist the updated HTML back to the block model
+      onUpdate({ content: el.innerHTML });
+      // Re-read format state from the selection so toolbars update
+      const isBold = document.queryCommandState("bold");
+      const isItalic = document.queryCommandState("italic");
+      setLocalFormats({ isBold, isItalic });
+      reportFormatState({ isBold, isItalic });
     },
-    [block.content, onUpdate],
+    [onUpdate, reportFormatState],
   );
+
+  // ── Register formatter so the main toolbar can trigger it ────────────────
+  useEffect(() => {
+    registerFormatter(applyFormat);
+  }, [registerFormatter, applyFormat]);
+
+  // ── Update toolbar position and active state on selection changes ────────
+  const handleSelectionChange = useCallback(() => {
+    // Only respond when our div is (or contains) the active/focused element
+    const el = divRef.current;
+    if (!el) return;
+    const active = document.activeElement;
+    if (active !== el && !el.contains(active)) return;
+
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) {
+      setToolbarCoords(null);
+      setLocalFormats({ isBold: false, isItalic: false });
+      reportFormatState({ isBold: false, isItalic: false });
+      return;
+    }
+
+    // Position the floating toolbar above the selection
+    const range = sel.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    if (rect.width > 0) {
+      setToolbarCoords({
+        top: rect.top - 44,
+        left: rect.left + rect.width / 2 - 52,
+      });
+    }
+
+    // Read which formats are active at the selection
+    const isBold = document.queryCommandState("bold");
+    const isItalic = document.queryCommandState("italic");
+    setLocalFormats({ isBold, isItalic });
+    reportFormatState({ isBold, isItalic });
+  }, [reportFormatState]);
+
+  useEffect(() => {
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () =>
+      document.removeEventListener("selectionchange", handleSelectionChange);
+  }, [handleSelectionChange]);
 
   return (
     <div>
-      {/* Floating portal toolbar still works as bonus on selection */}
       <FormatToolbar
         coords={toolbarCoords}
-        onBold={() => wrap("**")}
-        onItalic={() => wrap("_")}
+        onBold={() => applyFormat("bold")}
+        onItalic={() => applyFormat("italic")}
+        isBold={localFormats.isBold}
+        isItalic={localFormats.isItalic}
       />
 
-      <textarea
-        ref={textareaRef}
-        value={block.content}
-        onChange={(e) => onUpdate({ content: e.target.value })}
-        onMouseUp={checkSelection}
-        onKeyUp={checkSelection}
+      <div
+        ref={divRef}
+        contentEditable
+        suppressContentEditableWarning
+        onInput={(e) => {
+          onUpdate({ content: (e.currentTarget as HTMLDivElement).innerHTML });
+        }}
         onBlur={() => {
-          // Small delay so button clicks register before hiding
+          if (divRef.current) {
+            onUpdate({ content: divRef.current.innerHTML });
+          }
+          // Delay hide so toolbar button mousedown fires before blur hides it
           setTimeout(() => {
             setToolbarCoords(null);
-            setHasSelection(false);
+            setLocalFormats({ isBold: false, isItalic: false });
+            reportFormatState({ isBold: false, isItalic: false });
           }, 150);
         }}
-        placeholder="Write a paragraph..."
-        rows={3}
-        className="w-full bg-transparent border-0 focus:ring-0 resize-none py-2 font-body text-base text-primary placeholder:text-outline/35 leading-relaxed outline-none"
+        data-placeholder="Write a paragraph..."
+        className="w-full bg-transparent border-0 focus:ring-0 py-2 font-body text-base text-primary placeholder:text-outline/35 leading-relaxed outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-outline/35 empty:before:pointer-events-none"
       />
     </div>
   );

@@ -14,6 +14,7 @@ import {
   MdFormatBold,
   MdFormatItalic,
 } from "react-icons/md";
+import { FormatState } from "./FormatContext";
 
 const BLOCK_OPTIONS: {
   type: BlockType;
@@ -41,6 +42,7 @@ interface Props {
   compact?: boolean;
   onBold?: () => void;
   onItalic?: () => void;
+  formatState?: FormatState;
 }
 
 interface PortalDropdownProps {
@@ -118,6 +120,7 @@ export function AddBlockMenu({
   compact = false,
   onBold,
   onItalic,
+  formatState,
 }: Props) {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
@@ -160,7 +163,11 @@ export function AddBlockMenu({
                 onBold();
               }}
               title="Bold — select text in a paragraph first"
-              className="flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:bg-gray-200 text-gray-900 active:text-white active:bg-primary transition-colors rounded-sm"
+              className={`flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors rounded-sm ${
+                formatState?.isBold
+                  ? "bg-primary text-white"
+                  : "text-on-surface-variant hover:bg-gray-200 text-gray-900 active:text-white active:bg-primary"
+              }`}
             >
               <MdFormatBold size={15} />
               <span>Bold</span>
@@ -174,7 +181,11 @@ export function AddBlockMenu({
                 onItalic();
               }}
               title="Italic — select text in a paragraph first"
-              className="flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:bg-gray-200 text-gray-900 active:text-white active:bg-primary transition-colors rounded-sm"
+              className={`flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors rounded-sm ${
+                formatState?.isItalic
+                  ? "bg-primary text-white"
+                  : "text-on-surface-variant hover:bg-gray-200 text-gray-900 active:text-white active:bg-primary"
+              }`}
             >
               <MdFormatItalic size={15} />
               <span>Italic</span>
@@ -201,14 +212,3 @@ export function AddBlockMenu({
     </div>
   );
 }
-
-/*
-the italics and bold on the main toolbar do not work, but the popup toolbars work
-
-when i say the popup toolbars work, what i mean is that they add "**" and "_" respectively to the words when i select them. but that's not what i want. 
-
-what i want is that the boldened or italicized words actually render as such, and clicking the icons again for such words undo the bold or italics
-
-also, the floating icons should sync with the main toolbar, such that, for example, when an italicized word is selected, both the floating toolbar and main toolbar show that the word is italicized
-
-*/
