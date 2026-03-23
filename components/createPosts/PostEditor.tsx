@@ -31,8 +31,6 @@ export function PostEditor({ onChange }: PostEditorProps) {
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
   );
 
-  // Single function that updates state AND notifies parent —
-  // never called inside a setState updater
   const commit = useCallback(
     (next: Block[]) => {
       setBlocks(next);
@@ -52,15 +50,13 @@ export function PostEditor({ onChange }: PostEditorProps) {
   };
 
   const removeBlock = (id: string) => {
-    const next = safeBlocks(blocks.filter((b) => b.id !== id));
-    commit(next);
+    commit(safeBlocks(blocks.filter((b) => b.id !== id)));
   };
 
   const updateBlock = (id: string, patch: Partial<Block>) => {
-    const next = blocks.map((b) =>
-      b.id === id ? ({ ...b, ...patch } as Block) : b,
+    commit(
+      blocks.map((b) => (b.id === id ? ({ ...b, ...patch } as Block) : b)),
     );
-    commit(next);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -72,29 +68,46 @@ export function PostEditor({ onChange }: PostEditorProps) {
   };
 
   return (
-    <div className="space-y-3">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={blocks.map((b) => b.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {blocks.map((block) => (
-            <SortableBlock
-              key={block.id}
-              block={block}
-              onUpdate={(patch) => updateBlock(block.id, patch)}
-              onRemove={() => removeBlock(block.id)}
-              onAddAfter={(type) => addBlock(type, block.id)}
-            />
-          ))}
-        </SortableContext>
-      </DndContext>
-
+    <div className="border border-outline/20 rounded-sm overflow-hidden bg-surface">
+      {/* ── Toolbar: add-block buttons at the top ── */}
       <AddBlockMenu onAdd={(type) => addBlock(type)} />
+
+      {/* ── Block list ── */}
+      <div className="px-4 py-4 min-h-80">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={blocks.map((b) => b.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-2 divide-y divide-outline/10">
+              {blocks.map((block) => (
+                <div key={block.id} className="pt-2 first:pt-0">
+                  <SortableBlock
+                    block={block}
+                    onUpdate={(patch) => updateBlock(block.id, patch)}
+                    onRemove={() => removeBlock(block.id)}
+                    onAddAfter={(type) => addBlock(type, block.id)}
+                  />
+                </div>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
+
+      {/* ── Footer: block count ── */}
+      <div className="px-4 py-2 border-t border-outline/10 bg-surface-container-low flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-outline/50">
+          {blocks.length} {blocks.length === 1 ? "block" : "blocks"}
+        </span>
+        <span className="text-[10px] text-outline/40 uppercase tracking-widest">
+          Drag blocks to reorder
+        </span>
+      </div>
     </div>
   );
 }

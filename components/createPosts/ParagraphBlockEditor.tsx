@@ -14,7 +14,7 @@ export function ParagraphBlockEditor({ block, onUpdate }: Props) {
       onChange={(e) => onUpdate({ content: e.target.value })}
       placeholder="Write a paragraph..."
       rows={3}
-      className="w-full bg-transparent border-0 border-b border-outline/20 focus:border-primary focus:ring-0 resize-none py-2 font-body text-base text-primary placeholder:text-outline/40 leading-relaxed"
+      className="w-full bg-transparent border-0 focus:ring-0 resize-none py-2 font-body text-base text-primary placeholder:text-outline/35 leading-relaxed outline-none"
     />
   );
 }

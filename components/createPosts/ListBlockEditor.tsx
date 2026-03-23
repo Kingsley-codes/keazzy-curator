@@ -1,6 +1,7 @@
 // components/editor/blocks/ListBlockEditor.tsx
 
 import { BulletListBlock, OrderedListBlock } from "@/types/editorTypes";
+import { MdAdd, MdClose } from "react-icons/md";
 
 interface Props {
   block: BulletListBlock | OrderedListBlock;
@@ -42,9 +43,9 @@ export function ListBlockEditor({ block, onUpdate }: Props) {
   return (
     <div className="space-y-1 py-2">
       {block.items.map((item, index) => (
-        <div key={index} className="flex items-center gap-3">
-          <span className="text-outline shrink-0 w-5 text-sm font-body">
-            {block.type === "orderedList" ? `${index + 1}.` : "•"}
+        <div key={index} className="flex items-center gap-2.5">
+          <span className="text-outline/60 shrink-0 w-5 text-sm font-body text-center select-none">
+            {block.type === "orderedList" ? `${index + 1}.` : "·"}
           </span>
           <input
             type="text"
@@ -52,23 +53,23 @@ export function ListBlockEditor({ block, onUpdate }: Props) {
             onChange={(e) => updateItem(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="List item..."
-            className="flex-1 bg-transparent border-0 border-b border-outline/20 focus:border-primary focus:ring-0 py-1.5 font-body text-base text-primary placeholder:text-outline/40"
+            className="flex-1 bg-transparent border-0 border-b border-outline/15 focus:border-primary focus:ring-0 py-1.5 font-body text-base text-primary placeholder:text-outline/35 outline-none transition-colors"
           />
           <button
             type="button"
             onClick={() => removeItem(index)}
-            className="text-outline hover:text-error transition-colors"
+            className="text-outline/40 hover:text-error transition-colors shrink-0"
           >
-            <span className="material-symbols-outlined text-[16px]">close</span>
+            <MdClose size={15} />
           </button>
         </div>
       ))}
       <button
         type="button"
         onClick={addItem}
-        className="mt-2 text-[10px] font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors flex items-center gap-1"
+        className="mt-2 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-outline/50 hover:text-primary transition-colors"
       >
-        <span className="material-symbols-outlined text-[14px]">add</span>
+        <MdAdd size={14} />
         Add item
       </button>
     </div>
