@@ -60,9 +60,21 @@ export function ParagraphBlockEditor({ block, onUpdate }: Props) {
     registerFormatter(applyFormat);
   }, [registerFormatter, applyFormat]);
 
+  // ── Shared: read caret/selection format state and update both toolbars ────
+  const refreshFormats = useCallback(() => {
+    const el = divRef.current;
+    if (!el) return;
+    const active = document.activeElement;
+    if (active !== el && !el.contains(active)) return;
+
+    const isBold = document.queryCommandState("bold");
+    const isItalic = document.queryCommandState("italic");
+    setLocalFormats({ isBold, isItalic });
+    reportFormatState({ isBold, isItalic });
+  }, [reportFormatState]);
+
   // ── Update toolbar position and active state on selection changes ────────
   const handleSelectionChange = useCallback(() => {
-    // Only respond when our div is (or contains) the active/focused element
     const el = divRef.current;
     if (!el) return;
     const active = document.activeElement;
@@ -86,12 +98,8 @@ export function ParagraphBlockEditor({ block, onUpdate }: Props) {
       });
     }
 
-    // Read which formats are active at the selection
-    const isBold = document.queryCommandState("bold");
-    const isItalic = document.queryCommandState("italic");
-    setLocalFormats({ isBold, isItalic });
-    reportFormatState({ isBold, isItalic });
-  }, [reportFormatState]);
+    refreshFormats();
+  }, [reportFormatState, refreshFormats]);
 
   useEffect(() => {
     document.addEventListener("selectionchange", handleSelectionChange);
@@ -116,6 +124,7 @@ export function ParagraphBlockEditor({ block, onUpdate }: Props) {
         onInput={(e) => {
           onUpdate({ content: (e.currentTarget as HTMLDivElement).innerHTML });
         }}
+        onKeyUp={refreshFormats}
         onBlur={() => {
           if (divRef.current) {
             onUpdate({ content: divRef.current.innerHTML });

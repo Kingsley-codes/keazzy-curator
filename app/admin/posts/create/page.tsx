@@ -185,7 +185,7 @@ export default function CreatePostPage() {
             Hero Image
           </label>
           {form.heroImagePreview ? (
-            <div className="relative aspect-21/9 overflow-hidden bg-surface-container-low mb-4">
+            <div className="relative aspect-21/9 overflow-hidden bg-gray-50 mb-4">
               <Image
                 src={form.heroImagePreview}
                 alt="Hero preview"
@@ -207,7 +207,7 @@ export default function CreatePostPage() {
               </button>
             </div>
           ) : (
-            <label className="flex flex-col items-center justify-center aspect-21/9 border border-dashed border-outline/30 cursor-pointer hover:bg-surface-container-low transition-colors">
+            <label className="flex flex-col items-center justify-center aspect-21/9 border border-dashed border-outline/30 cursor-pointer hover:bg-gray-50 rounded-md transition-colors">
               <MdAddPhotoAlternate className="w-20 h-20" />
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-outline">
                 Click to upload hero image
