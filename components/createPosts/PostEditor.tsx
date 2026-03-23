@@ -1,6 +1,6 @@
 // components/editor/PostEditor.tsx
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { PostContent } from "@/types/content";
 import {
   DndContext,
@@ -19,6 +19,7 @@ import { createBlock, blocksToJSON, safeBlocks } from "./blockHelpers";
 import { SortableBlock } from "./SortableBlock";
 import { AddBlockMenu } from "./AddBlockMenu";
 import { Block, BlockType } from "@/types/editorTypes";
+import { FormatContext } from "./FormatContext";
 
 interface PostEditorProps {
   onChange: (json: PostContent) => void;
@@ -26,6 +27,9 @@ interface PostEditorProps {
 
 export function PostEditor({ onChange }: PostEditorProps) {
   const [blocks, setBlocks] = useState<Block[]>([createBlock("paragraph")]);
+
+  // Holds a ref to the currently focused block's wrap function
+  const formatterRef = useRef<(marker: string) => void>(() => {});
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -68,46 +72,59 @@ export function PostEditor({ onChange }: PostEditorProps) {
   };
 
   return (
-    <div className="border border-outline/20 rounded-sm overflow-hidden bg-surface">
-      {/* ── Toolbar: add-block buttons at the top ── */}
-      <AddBlockMenu onAdd={(type) => addBlock(type)} />
+    <FormatContext.Provider
+      value={{
+        triggerFormat: (marker) => formatterRef.current(marker),
+        registerFormatter: (fn) => {
+          formatterRef.current = fn;
+        },
+      }}
+    >
+      <div className="border border-outline/20 rounded-sm overflow-hidden bg-surface">
+        <AddBlockMenu
+          onAdd={(type) => addBlock(type)}
+          onBold={() => formatterRef.current("**")}
+          onItalic={() => formatterRef.current("_")}
+        />
 
-      {/* ── Block list ── */}
-      <div className="px-4 py-4 min-h-80">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={blocks.map((b) => b.id)}
-            strategy={verticalListSortingStrategy}
+        <div className="px-4 py-4 min-h-80">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
           >
-            <div className="space-y-2 divide-y divide-outline/10">
-              {blocks.map((block) => (
-                <div key={block.id} className="pt-2 first:pt-0">
-                  <SortableBlock
-                    block={block}
-                    onUpdate={(patch) => updateBlock(block.id, patch)}
-                    onRemove={() => removeBlock(block.id)}
-                    onAddAfter={(type) => addBlock(type, block.id)}
-                  />
-                </div>
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-      </div>
+            <SortableContext
+              items={blocks.map((b) => b.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-2 divide-y divide-outline/10">
+                {blocks.map((block) => (
+                  <div
+                    key={block.id}
+                    className="pt-2 hover:bg-gray-100 first:pt-0"
+                  >
+                    <SortableBlock
+                      block={block}
+                      onUpdate={(patch) => updateBlock(block.id, patch)}
+                      onRemove={() => removeBlock(block.id)}
+                      onAddAfter={(type) => addBlock(type, block.id)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
 
-      {/* ── Footer: block count ── */}
-      <div className="px-4 py-2 border-t border-outline/10 bg-surface-container-low flex items-center justify-between">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-outline/50">
-          {blocks.length} {blocks.length === 1 ? "block" : "blocks"}
-        </span>
-        <span className="text-[10px] text-outline/40 uppercase tracking-widest">
-          Drag blocks to reorder
-        </span>
+        <div className="px-4 py-2 border-t border-outline/10 bg-surface-container-low flex items-center justify-between">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-outline/50">
+            {blocks.length} {blocks.length === 1 ? "block" : "blocks"}
+          </span>
+          <span className="text-[10px] text-outline/40 uppercase tracking-widest">
+            Drag blocks to reorder
+          </span>
+        </div>
       </div>
-    </div>
+    </FormatContext.Provider>
   );
 }

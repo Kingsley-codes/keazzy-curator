@@ -10,6 +10,7 @@
   --color-secondary: #e11d48;
   --color-tertiary: #2563eb;
   --color-neutral: #0f172a;
+  --color-surface: #faf8ff;
 
   /* Typography */
   --font-headline: var(--font-newsreader);
@@ -24,6 +25,7 @@
   --color-foreground: var(--foreground);
 
   --color-primary: var(--color-primary);
+  --color-surface: var(--color-surface);
   --color-secondary: var(--color-secondary);
   --color-tertiary: var(--color-tertiary);
   --color-neutral: var(--color-neutral);

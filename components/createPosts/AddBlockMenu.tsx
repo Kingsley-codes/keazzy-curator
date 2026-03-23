@@ -11,6 +11,8 @@ import {
   MdFormatListBulleted,
   MdFormatListNumbered,
   MdAdd,
+  MdFormatBold,
+  MdFormatItalic,
 } from "react-icons/md";
 
 const BLOCK_OPTIONS: {
@@ -37,9 +39,10 @@ const BLOCK_OPTIONS: {
 interface Props {
   onAdd: (type: BlockType) => void;
   compact?: boolean;
+  onBold?: () => void;
+  onItalic?: () => void;
 }
 
-// ── Portal dropdown — renders at document root, never clips ──────────────────
 interface PortalDropdownProps {
   anchorRef: React.RefObject<HTMLButtonElement | null>;
   onAdd: (type: BlockType) => void;
@@ -50,23 +53,18 @@ function PortalDropdown({ anchorRef, onAdd, onClose }: PortalDropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
 
-  // Calculate position from anchor button's bounding rect
   useEffect(() => {
     if (!anchorRef.current) return;
     const rect = anchorRef.current.getBoundingClientRect();
-
-    const left = rect.left; // no scrollX — fixed is relative to viewport
-
-    let top = rect.bottom + 4; // no scrollY
+    const left = rect.left;
+    let top = rect.bottom + 4;
     const dropdownHeight = 260;
     if (rect.bottom + dropdownHeight > window.innerHeight) {
-      top = rect.top - dropdownHeight - 4; // flip upward
+      top = rect.top - dropdownHeight - 4;
     }
-
     setCoords({ top, left });
   }, [anchorRef]);
 
-  // Close on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (
@@ -82,7 +80,6 @@ function PortalDropdown({ anchorRef, onAdd, onClose }: PortalDropdownProps) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [anchorRef, onClose]);
 
-  // Close on Escape
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -116,14 +113,16 @@ function PortalDropdown({ anchorRef, onAdd, onClose }: PortalDropdownProps) {
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
-export function AddBlockMenu({ onAdd, compact = false }: Props) {
+export function AddBlockMenu({
+  onAdd,
+  compact = false,
+  onBold,
+  onItalic,
+}: Props) {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
-
   const handleClose = useCallback(() => setOpen(false), []);
 
-  // ── Compact mode: single "+ Add block" trigger with portal dropdown ──
   if (compact) {
     return (
       <>
@@ -131,12 +130,11 @@ export function AddBlockMenu({ onAdd, compact = false }: Props) {
           ref={anchorRef}
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors py-1"
+          className="flex items-center hover:bg-gray-300 px-1 gap-1 text-[10px] font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors py-1"
         >
           <MdAdd size={14} />
           Add block
         </button>
-
         {open && (
           <PortalDropdown
             anchorRef={anchorRef}
@@ -148,9 +146,46 @@ export function AddBlockMenu({ onAdd, compact = false }: Props) {
     );
   }
 
-  // ── Full toolbar: horizontal button row at top of editor ──
+  // Full toolbar row
   return (
     <div className="flex flex-wrap items-center gap-1 px-3 py-2 bg-surface-container-low border-b border-outline/15">
+      {/* ── Format buttons ── */}
+      {(onBold || onItalic) && (
+        <>
+          {onBold && (
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                onBold();
+              }}
+              title="Bold — select text in a paragraph first"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:bg-primary hover:text-on-primary transition-colors rounded-sm"
+            >
+              <MdFormatBold size={15} />
+              <span>Bold</span>
+            </button>
+          )}
+          {onItalic && (
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                onItalic();
+              }}
+              title="Italic — select text in a paragraph first"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:bg-primary hover:text-on-primary transition-colors rounded-sm"
+            >
+              <MdFormatItalic size={15} />
+              <span>Italic</span>
+            </button>
+          )}
+          {/* Divider between format and block buttons */}
+          <div className="w-px h-5 bg-outline/20 mx-1" />
+        </>
+      )}
+
+      {/* ── Block type buttons ── */}
       {BLOCK_OPTIONS.map((opt) => (
         <button
           key={opt.type}

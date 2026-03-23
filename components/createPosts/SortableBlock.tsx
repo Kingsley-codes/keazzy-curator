@@ -36,7 +36,7 @@ export function SortableBlock({
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="group relative">
+    <div ref={setNodeRef} style={style} className="group pb-3 relative">
       <div className="flex items-start gap-1">
         {/* Drag Handle */}
         <button
