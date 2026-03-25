@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Newsreader, Work_Sans } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { BottomNav } from "@/components/BottomNav";
 
 const newsreader = Newsreader({
   subsets: ["latin"],
@@ -21,9 +18,12 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "The Modern Curator | High-End Editorial",
+  title: "Keazzy Curations",
   description:
     "Redefining the digital periodical through curated aesthetics and rigorous journalism.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -34,14 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${newsreader.variable} ${workSans.variable}`}>
       <body className="min-h-full flex flex-col antialiased overflow-x-hidden">
-        <Navbar />
         {children}
-        {/* Footer only on desktop */}
-        <div className="hidden md:block">
-          <Footer />
-        </div>
-        {/* Bottom nav only on mobile */}
-        <BottomNav />
       </body>
     </html>
   );
