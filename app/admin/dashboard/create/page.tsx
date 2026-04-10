@@ -127,7 +127,14 @@ export default function CreatePostPage() {
               <option value="" disabled>
                 Select a category
               </option>
-              {["news", "sports", "fashion", "tech", "science"].map((cat) => (
+              {[
+                "news",
+                "sports",
+                "fashion",
+                "tech",
+                "science",
+                "short stories",
+              ].map((cat) => (
                 <option key={cat} value={cat} className="capitalize">
                   {cat.charAt(0).toUpperCase() + cat.slice(1)}
                 </option>

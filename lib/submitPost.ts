@@ -144,7 +144,10 @@ export async function submitPost(
   contentFiles.forEach((file) => fd.append("contentImages", file));
 
   // ── Request ─────────────────────────────────────────────────────────────
-  const res = await fetch(`${API_URL}/api/posts`, { method: "POST", body: fd });
+  const res = await fetch(`${API_URL}/api/admin/posts`, {
+    method: "POST",
+    body: fd,
+  });
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -199,7 +202,7 @@ export async function updatePost(
     contentFiles.forEach((file) => fd.append("contentImages", file));
   }
 
-  const res = await fetch(`${API_URL}/api/posts/${id}`, {
+  const res = await fetch(`${API_URL}/api/admin/posts/${id}`, {
     method: "PATCH",
     body: fd,
   });
