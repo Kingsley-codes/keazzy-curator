@@ -100,6 +100,8 @@ function extractImageFiles(
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 /**
  * Build a multipart/form-data request and POST to /api/posts.
  * Returns the created post JSON on success, or throws with the server error.
@@ -142,7 +144,7 @@ export async function submitPost(
   contentFiles.forEach((file) => fd.append("contentImages", file));
 
   // ── Request ─────────────────────────────────────────────────────────────
-  const res = await fetch("/api/posts", { method: "POST", body: fd });
+  const res = await fetch(`${API_URL}/api/posts`, { method: "POST", body: fd });
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -197,7 +199,10 @@ export async function updatePost(
     contentFiles.forEach((file) => fd.append("contentImages", file));
   }
 
-  const res = await fetch(`/api/posts/${id}`, { method: "PATCH", body: fd });
+  const res = await fetch(`${API_URL}/api/posts/${id}`, {
+    method: "PATCH",
+    body: fd,
+  });
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));

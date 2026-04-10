@@ -1,5 +1,6 @@
 // components/editor/blocks/ImageBlockEditor.tsx
 
+import { useRef, useEffect } from "react";
 import { ImageBlock, ImageSlot } from "@/types/editorTypes";
 import { MdAddPhotoAlternate, MdClose } from "react-icons/md";
 
@@ -9,6 +10,18 @@ interface Props {
 }
 
 export function ImageBlockEditor({ block, onUpdate }: Props) {
+  // Generate stable keys once per slot index — never regenerated on re-render
+  const slotKeys = useRef<string[]>(
+    block.images.map(() => crypto.randomUUID()),
+  );
+
+  // If a new slot is added (side-by-side), ensure it gets a key too
+  useEffect(() => {
+    while (slotKeys.current.length < block.images.length) {
+      slotKeys.current.push(crypto.randomUUID());
+    }
+  }, [block.images.length]);
+
   const setLayout = (layout: "single" | "side-by-side") => {
     const images =
       layout === "side-by-side" && block.images.length === 1
@@ -27,7 +40,12 @@ export function ImageBlockEditor({ block, onUpdate }: Props) {
   };
 
   const handleFile = (index: number, file: File) => {
-    updateImage(index, { file, preview: URL.createObjectURL(file) });
+    updateImage(index, {
+      file,
+      preview: URL.createObjectURL(file),
+      _file: file, // picked up by submitPost's tree walker
+      _key: slotKeys.current[index], // used to match file → content node on the server
+    });
   };
 
   return (

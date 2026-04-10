@@ -31,6 +31,8 @@ export interface ImageSlot {
   alt: string;
   publicId?: string;
   src?: string;
+  _file?: File; // add this
+  _key?: string;
 }
 
 export interface ImageBlock extends BaseBlock {
