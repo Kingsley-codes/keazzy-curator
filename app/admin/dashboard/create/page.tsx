@@ -5,6 +5,7 @@ import { PostContent } from "@/types/content";
 import { PostEditor } from "@/components/createPosts/PostEditor";
 import Image from "next/image";
 import { MdAddPhotoAlternate } from "react-icons/md";
+import { submitPost } from "@/lib/submitPost";
 
 interface PostForm {
   title: string;
@@ -52,41 +53,15 @@ export default function CreatePostPage() {
     setError(null);
 
     try {
-      // 1. Upload hero image first
-      const heroFormData = new FormData();
-      heroFormData.append("image", form.heroImage);
-      const heroRes = await fetch("/api/upload/image?type=hero", {
-        method: "POST",
-        body: heroFormData,
+      await submitPost({
+        title: form.title,
+        category: form.category,
+        tags: form.tags,
+        status,
+        heroImage: form.heroImage,
+        heroAlt: form.heroAlt,
+        content: form.content,
       });
-      if (!heroRes.ok) throw new Error("Hero image upload failed.");
-      const {
-        url: heroSrc,
-        publicId: heroPublicId,
-      }: { url: string; publicId: string } = await heroRes.json();
-
-      // 2. Submit the post
-      const postRes = await fetch("/api/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: form.title,
-          category: form.category,
-          tags: form.tags
-            .split(",")
-            .map((t) => t.trim())
-            .filter(Boolean),
-          status,
-          heroImage: {
-            src: heroSrc,
-            publicId: heroPublicId,
-            alt: form.heroAlt,
-          },
-          content: form.content,
-        }),
-      });
-
-      if (!postRes.ok) throw new Error("Failed to save post.");
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
