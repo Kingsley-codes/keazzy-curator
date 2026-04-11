@@ -12,6 +12,7 @@ interface PostForm {
   category: string;
   tags: string;
   status: "draft" | "published";
+  isFeatured: boolean;
   heroImage: File | null;
   heroImagePreview: string;
   heroAlt: string;
@@ -24,6 +25,7 @@ export default function CreatePostPage() {
     category: "",
     tags: "",
     status: "draft",
+    isFeatured: false,
     heroImage: null,
     heroImagePreview: "",
     heroAlt: "",
@@ -58,6 +60,7 @@ export default function CreatePostPage() {
         category: form.category,
         tags: form.tags,
         status,
+        isFeatured: form.isFeatured,
         heroImage: form.heroImage,
         heroAlt: form.heroAlt,
         content: form.content,
@@ -107,7 +110,7 @@ export default function CreatePostPage() {
               setForm((prev) => ({ ...prev, title: e.target.value }))
             }
             placeholder="Enter article title..."
-            className="w-full bg-transparent border-0 border-b border-outline/30 focus:border-primary focus:ring-0 py-3 font-headline text-3xl text-primary placeholder:text-outline/40"
+            className="w-full focus:outline-none bg-transparent border-0 border-b py-3 font-headline text-3xl text-primary placeholder:text-gray-400"
           />
         </div>
 
@@ -156,8 +159,39 @@ export default function CreatePostPage() {
                 setForm((prev) => ({ ...prev, tags: e.target.value }))
               }
               placeholder="e.g. minimalism, UX, design"
-              className="w-full bg-transparent border-0 border-b border-outline/30 focus:border-primary focus:ring-0 py-3 font-body text-sm text-primary placeholder:text-outline/40"
+              className="w-full focus:outline-none bg-transparent border-0 caret-primary border-b border-outline/30 focus:border-primary focus:ring-0 py-3 font-body text-sm text-primary placeholder:text-outline/40"
             />
+          </div>
+        </div>
+
+        {/* Featured Toggle */}
+        <div className="py-3 border-b border-outline/10">
+          <div>
+            <label className="block text-[10px] mb-1.5 font-bold uppercase tracking-[0.2em] text-primary">
+              Featured Post
+            </label>
+
+            <button
+              type="button"
+              role="switch"
+              aria-checked={form.isFeatured}
+              onClick={() =>
+                setForm((prev) => ({ ...prev, isFeatured: !prev.isFeatured }))
+              }
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border border-gray-300 transition-colors duration-200 focus:outline-none ${
+                form.isFeatured ? "bg-primary" : "bg-outline/30"
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform duration-200 ${
+                  form.isFeatured ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+
+            <p className="text-xs text-gray-400 font-body mt-0.5">
+              Featured posts are highlighted on the homepage.
+            </p>
           </div>
         </div>
 
@@ -190,8 +224,8 @@ export default function CreatePostPage() {
             </div>
           ) : (
             <label className="flex flex-col items-center justify-center aspect-21/9 border border-dashed border-outline/30 cursor-pointer hover:bg-gray-50 rounded-md transition-colors">
-              <MdAddPhotoAlternate className="w-20 h-20" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-outline">
+              <MdAddPhotoAlternate className="w-20 text-gray-600 h-20" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
                 Click to upload hero image
               </span>
               <input
@@ -210,7 +244,7 @@ export default function CreatePostPage() {
               setForm((prev) => ({ ...prev, heroAlt: e.target.value }))
             }
             placeholder="Describe the hero image for accessibility..."
-            className="w-full mt-3 bg-transparent border-0 border-b border-outline/30 focus:border-primary focus:ring-0 py-2 font-body text-sm text-primary placeholder:text-outline/40"
+            className="w-full focus:outline-none mt-3 bg-transparent border-0 border-b border-outline/30 focus:border-primary focus:ring-0 py-2 font-body text-sm text-primary placeholder:text-gray-400"
           />
         </div>
 

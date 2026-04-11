@@ -11,6 +11,7 @@ export interface PostFormData {
   category: string;
   tags: string;
   status: "draft" | "published";
+  isFeatured: boolean;
   heroImage: File;
   heroAlt: string;
   content: PostContent;
@@ -119,6 +120,7 @@ export async function submitPost(
   fd.append("title", data.title.trim());
   fd.append("category", data.category);
   fd.append("status", data.status);
+  fd.append("isFeatured", String(data.isFeatured));
 
   const tags = data.tags
     .split(",")
@@ -175,6 +177,8 @@ export async function updatePost(
   if (data.title) fd.append("title", data.title.trim());
   if (data.category) fd.append("category", data.category);
   if (data.status) fd.append("status", data.status);
+  if (data.isFeatured !== undefined)
+    fd.append("isFeatured", String(data.isFeatured));
   if (data.tags !== undefined) {
     data.tags
       .split(",")

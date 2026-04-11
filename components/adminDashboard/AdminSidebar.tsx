@@ -1,18 +1,22 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FiGrid, FiSettings } from "react-icons/fi";
-import { FaUsers } from "react-icons/fa";
-import { PiPlantDuotone } from "react-icons/pi";
-import { FaMoneyBills } from "react-icons/fa6";
-import { TbCreditCardPay } from "react-icons/tb";
+import { FiSettings } from "react-icons/fi";
+
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
-import { IoIosChatboxes } from "react-icons/io";
 import { useEffect, useRef, useState } from "react";
 import { FiLogOut, FiChevronUp } from "react-icons/fi";
-import { MdOutlineCardTravel } from "react-icons/md";
 import axios from "axios";
 import Logo from "@/components/Logo";
+import {
+  MdDashboard,
+  MdInsights,
+  MdArticle,
+  MdImage,
+  MdSettings,
+  MdAdd,
+  MdLogout,
+} from "react-icons/md";
 
 export interface UserData {
   firstName?: string;
@@ -30,26 +34,30 @@ interface SidebarProps {
 }
 
 const navLinks = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: FiGrid },
-  { href: "/admin/dashboard/users", label: "Users", icon: FaUsers },
-  { href: "/admin/dashboard/produce", label: "Produces", icon: PiPlantDuotone },
   {
-    href: "/admin/dashboard/investments",
-    label: "Investments",
-    icon: MdOutlineCardTravel,
+    label: "Dashboard",
+    icon: MdDashboard,
+    href: "/admin/dashboard",
+    active: true,
   },
   {
-    href: "/admin/dashboard/payments",
-    label: "Payments",
-    icon: TbCreditCardPay,
+    label: "Analytics",
+    icon: MdInsights,
+    href: "/admin/dashboard/analytics",
+    active: false,
   },
   {
-    href: "/admin/dashboard/withdrawals",
-    label: "Withdrawals",
-    icon: FaMoneyBills,
+    label: "Posts",
+    icon: MdArticle,
+    href: "/admin/dashboard/posts",
+    active: false,
   },
-
-  { href: "/admin/dashboard/chat", label: "Chat", icon: IoIosChatboxes },
+  {
+    label: "Settings",
+    icon: MdSettings,
+    href: "/admin/dashboard/settings",
+    active: false,
+  },
 ];
 
 function getInitials(user: UserData | null): string {
@@ -81,6 +89,7 @@ export default function AdminSidebar({ user, isOpen, onToggle }: SidebarProps) {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [activeItem, setActiveItem] = useState("Dashboard");
 
   const router = useRouter();
 
@@ -194,14 +203,12 @@ export default function AdminSidebar({ user, isOpen, onToggle }: SidebarProps) {
           {/* Nav */}
           <nav className="flex flex-col gap-2 w-full">
             {navLinks.map(({ href, label, icon: Icon }) => {
-              const isActive =
-                href === "/admin/dashboard"
-                  ? pathname === "/admin/dashboard"
-                  : pathname.startsWith(href);
+              const isActive = activeItem === label;
               return (
                 <Link
                   key={href}
                   href={href}
+                  onClick={() => setActiveItem(label)}
                   title={!isOpen ? label : undefined}
                   className={`flex items-center gap-3 rounded-xl text-sm font-bold transition-colors whitespace-nowrap
                     ${isOpen ? "px-4 py-3" : "p-3 justify-center"}

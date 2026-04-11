@@ -1,4 +1,4 @@
-// components/editor/PostEditor.tsx
+// components/createPosts/PostEditor.tsx
 "use client";
 import { useState, useCallback, useRef } from "react";
 import { PostContent } from "@/types/content";
@@ -23,10 +23,17 @@ import { FormatContext, FormatState } from "./FormatContext";
 
 interface PostEditorProps {
   onChange: (json: PostContent) => void;
+  /** Pre-populated blocks for edit mode. When provided the editor starts with
+   *  these instead of a blank paragraph. */
+  initialBlocks?: Block[];
 }
 
-export function PostEditor({ onChange }: PostEditorProps) {
-  const [blocks, setBlocks] = useState<Block[]>([createBlock("paragraph")]);
+export function PostEditor({ onChange, initialBlocks }: PostEditorProps) {
+  const [blocks, setBlocks] = useState<Block[]>(
+    initialBlocks && initialBlocks.length > 0
+      ? initialBlocks
+      : [createBlock("paragraph")],
+  );
   const [formatState, setFormatState] = useState<FormatState>({
     isBold: false,
     isItalic: false,
