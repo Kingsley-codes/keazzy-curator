@@ -1,22 +1,6 @@
-import { BottomNav } from "@/components/BottomNav";
-import { Footer } from "@/components/Footer";
-import { Navbar } from "@/components/Navbar";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { SiteHeader } from "@/components/site/SiteHeader";
 
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <>
-      <Navbar />
-      {children}
-      {/* Footer only on desktop */}
-      <div className="hidden md:block">
-        <Footer />
-      </div>
-      {/* Bottom nav only on mobile */}
-      <BottomNav />
-    </>
-  );
+export default function MainLayout({ children }: { children: React.ReactNode }) {
+  return <><SiteHeader />{children}<SiteFooter /></>;
 }

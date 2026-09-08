@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { Newsreader, Work_Sans } from "next/font/google";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 
-const newsreader = Newsreader({
+const newsreader = Cormorant_Garamond({
   subsets: ["latin"],
   variable: "--font-newsreader",
   display: "swap",
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
 });
 
-const workSans = Work_Sans({
+const workSans = Inter({
   subsets: ["latin"],
   variable: "--font-work-sans",
   display: "swap",
@@ -18,9 +18,9 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Keazzy Curations",
+  title: "Keazzy's Curations — Thoughtful Stories. Fresh Perspectives.",
   description:
-    "Redefining the digital periodical through curated aesthetics and rigorous journalism.",
+    "Independent coverage of news, sports, fashion, technology and science, thoughtfully curated.",
   icons: {
     icon: "/favicon.svg",
   },
@@ -33,7 +33,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${newsreader.variable} ${workSans.variable}`}>
-      <body className="min-h-full flex flex-col antialiased overflow-x-hidden">
+      <body className="min-h-full overflow-x-hidden bg-[#fbfaf7] font-sans text-[#111] antialiased">
         {children}
       </body>
     </html>
