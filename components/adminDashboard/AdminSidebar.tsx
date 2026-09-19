@@ -12,10 +12,7 @@ import {
   MdDashboard,
   MdInsights,
   MdArticle,
-  MdImage,
   MdSettings,
-  MdAdd,
-  MdLogout,
 } from "react-icons/md";
 
 export interface UserData {

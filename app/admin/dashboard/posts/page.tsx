@@ -1,3 +1,3 @@
-export default function Posts() {
-  return <div>Hello world</div>;
-}
+import PostsManager from "@/components/adminDashboard/PostsManager";
+
+export default function PostsPage() { return <PostsManager />; }
