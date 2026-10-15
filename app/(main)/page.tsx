@@ -4,5 +4,12 @@ import { LatestStories } from "@/components/home/LatestStories";
 import { NewsletterSignup } from "@/components/editorial/NewsletterSignup";
 
 export default function HomePage() {
-  return <main><HomeHero /><LatestStories /><CategoryGrid /><NewsletterSignup /></main>;
+  return (
+    <main>
+      <HomeHero />
+      <LatestStories />
+      <CategoryGrid />
+      <NewsletterSignup />
+    </main>
+  );
 }

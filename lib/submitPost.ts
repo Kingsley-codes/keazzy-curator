@@ -148,6 +148,7 @@ export async function submitPost(
   // ── Request ─────────────────────────────────────────────────────────────
   const res = await fetch(`${API_URL}/api/admin/posts`, {
     method: "POST",
+    credentials: "include",
     body: fd,
   });
 
@@ -208,6 +209,7 @@ export async function updatePost(
 
   const res = await fetch(`${API_URL}/api/admin/posts/${id}`, {
     method: "PATCH",
+    credentials: "include",
     body: fd,
   });
 

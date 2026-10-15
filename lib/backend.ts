@@ -27,6 +27,10 @@ export type PostsResponse = {
   pagination: { total: number; page: number; limit: number; pages: number };
 };
 
+export class ApiError extends Error {
+  constructor(message: string, public status: number) { super(message); }
+}
+
 export async function requestJson<T>(
   path: string,
   init?: RequestInit,
@@ -45,7 +49,7 @@ export async function requestJson<T>(
     error?: string;
   };
   if (!response.ok) {
-    throw new Error(body.message ?? body.error ?? "The request could not be completed.");
+    throw new ApiError(body.message ?? body.error ?? "The request could not be completed.", response.status);
   }
   return body;
 }

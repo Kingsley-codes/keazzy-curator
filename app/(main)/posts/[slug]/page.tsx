@@ -16,7 +16,7 @@ import type { ContentNode } from "@/types/content";
 export function generateStaticParams() { return posts.map(({ slug }) => ({ slug })); }
 
 async function getBackendPost(slug: string): Promise<ApiPost | null> {
-  try { const response = await fetch(`${BACKEND_URL}/api/admin/posts/${slug}`, { cache: "no-store" }); if (!response.ok) return null; return ((await response.json()) as { post: ApiPost }).post; } catch { return null; }
+  try { const response = await fetch(`${BACKEND_URL}/api/posts/${slug}`, { cache: "no-store" }); if (!response.ok) return null; return ((await response.json()) as { post: ApiPost }).post; } catch { return null; }
 }
 const validCategories: Category[] = ["News", "Sports", "Fashion", "Tech", "Science"];
 function categoryName(value: string): Category { const name = `${value.charAt(0).toUpperCase()}${value.slice(1).toLowerCase()}` as Category; return validCategories.includes(name) ? name : "News"; }
