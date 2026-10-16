@@ -1,23 +1,134 @@
 "use client";
-
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { FiEye, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
-import { ApiPost, deletePost, friendlyDate, getPosts, setPostStatus } from "@/lib/backend";
-
-const PAGE_SIZE = 8;
+import { useEffect, useState } from "react";
+import { ApiPost, requestJson, PostsResponse } from "@/lib/backend";
+import {
+  PageHeading,
+  ErrorNotice,
+  Pagination,
+  primaryButton,
+  input,
+} from "./AdminUI";
+import { PostTable } from "./PostTable";
 export default function PostsManager() {
-  const [posts, setPosts] = useState<ApiPost[]>([]), [loading, setLoading] = useState(true), [error, setError] = useState("");
-  const [query, setQuery] = useState(""), [status, setStatus] = useState("all"), [category, setCategory] = useState("all"), [page, setPage] = useState(1);
-  useEffect(() => { getPosts().then((data) => setPosts(data.posts)).catch((err) => setError(err.message)).finally(() => setLoading(false)); }, []);
-  const filtered = useMemo(() => posts.filter((post) => (status === "all" || post.status === status) && (category === "all" || post.category === category) && post.title.toLowerCase().includes(query.toLowerCase())), [posts, status, category, query]);
-  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)), rows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  async function remove(post: ApiPost) { if (!window.confirm(`Permanently delete “${post.title}”?`)) return; try { await deletePost(post._id); setPosts((current) => current.filter((item) => item._id !== post._id)); } catch (err) { setError(err instanceof Error ? err.message : "Delete failed."); } }
-  async function toggle(post: ApiPost) { const next = post.status === "published" ? "draft" : "published"; try { await setPostStatus(post._id, next); setPosts((current) => current.map((item) => item._id === post._id ? { ...item, status: next } : item)); } catch (err) { setError(err instanceof Error ? err.message : "Status update failed."); } }
-  return <div className="p-5 md:p-8"><div className="flex flex-wrap items-end justify-between gap-5"><div><p className="text-xs text-[#777]">Dashboard　›　Posts</p><h1 className="font-serif text-5xl font-semibold">Posts</h1><p className="text-sm text-[#666]">Manage, edit and publish your content. Create inspiring stories for a more informed world.</p></div><Link href="/admin/dashboard/posts/create" className="flex min-h-[45px] items-center justify-center rounded bg-linear-to-r from-[#b77e30] via-[#cc9c55] to-[#b77e30] px-6 text-[13px] text-white transition hover:-translate-y-px hover:brightness-95"><FiPlus className="mr-2" /> New Post</Link></div>
-    <div className="mt-5 flex flex-wrap gap-3 rounded-lg border border-[#e4e0da] bg-white p-3"><select value={status} onChange={(event) => { setStatus(event.target.value); setPage(1); }} className="h-10 rounded border border-[#ddd] bg-white px-3 text-xs"><option value="all">All Statuses</option><option value="published">Published</option><option value="draft">Draft</option></select><select value={category} onChange={(event) => { setCategory(event.target.value); setPage(1); }} className="h-10 rounded border border-[#ddd] bg-white px-3 text-xs"><option value="all">All Categories</option>{["news","sports","fashion","tech","science","short stories"].map((item) => <option key={item} value={item}>{item}</option>)}</select><label className="ml-auto flex h-10 min-w-[240px] items-center gap-2 rounded border border-[#ddd] px-3"><FiSearch /><input value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} className="min-w-0 flex-1 text-xs" placeholder="Search posts…" /></label></div>
-    {error && <p className="mt-4 rounded bg-[#fff0ed] p-3 text-xs text-[#9c331f]">{error}</p>}
-    <section className="mt-4 overflow-hidden rounded-lg border border-[#e4e0da] bg-white"><div className="flex justify-between p-4"><h2 className="font-serif text-xl font-semibold">All Posts ({filtered.length})</h2><span className="text-[10px] text-[#777]">Newest first</span></div><div className="overflow-x-auto"><table className="w-full min-w-[960px] text-left text-[11px]"><thead className="bg-[#f5f4f1] text-[9px] uppercase"><tr><th className="p-3">Title</th><th>Category</th><th>Status</th><th>Views</th><th>Published at</th><th>Actions</th></tr></thead><tbody className="divide-y divide-[#ece8e2]">{rows.map((post) => <tr key={post._id}><td className="p-3"><div className="flex items-center gap-3">{post.heroImage?.src ? <div className="relative size-14 shrink-0 overflow-hidden rounded"><Image src={post.heroImage.src} alt={post.heroImage.alt ?? ""} fill sizes="56px" className="object-cover" unoptimized /></div> : <div className="size-14 rounded bg-[#eee]" />}<div><strong className="block max-w-[330px]">{post.title}</strong><span className="line-clamp-1 max-w-[330px] text-[#777]">/{post.slug}</span></div></div></td><td><span className="rounded bg-[#f0ebe2] px-3 py-1 capitalize">{post.category}</span></td><td><button onClick={() => toggle(post)} className={`rounded px-3 py-1 text-[9px] capitalize ${post.status === "published" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`} title="Change status">{post.status}</button></td><td>{post.viewCount ?? 0}</td><td>{friendlyDate(post.createdAt)}</td><td><div className="flex gap-2"><Link href={`/posts/${post.slug}`} className="rounded border border-[#ddd] p-2" aria-label="View post"><FiEye /></Link><button onClick={() => remove(post)} className="rounded border border-[#ddd] p-2 text-red-500" aria-label="Delete post"><FiTrash2 /></button></div></td></tr>)}{!loading && rows.length === 0 && <tr><td colSpan={6} className="p-10 text-center text-[#777]">No posts match these filters.</td></tr>}{loading && <tr><td colSpan={6} className="p-10 text-center text-[#777]">Loading posts…</td></tr>}</tbody></table></div><div className="flex items-center justify-between border-t border-[#ece8e2] p-4 text-[10px]"><span>Showing {rows.length} of {filtered.length} posts</span><div className="flex gap-2">{Array.from({ length: pages }, (_, index) => <button key={index} onClick={() => setPage(index + 1)} className={`size-8 rounded border ${page === index + 1 ? "border-[#171717] bg-[#171717] text-white" : "border-[#ddd]"}`}>{index + 1}</button>)}</div></div></section>
-  </div>;
+  const [data, setData] = useState<PostsResponse>({
+    posts: [],
+    pagination: { page: 1, pages: 1, total: 0, limit: 15 },
+  });
+  const [query, setQuery] = useState(""),
+    [status, setStatus] = useState(""),
+    [category, setCategory] = useState(""),
+    [page, setPage] = useState(1),
+    [error, setError] = useState(""),
+    [loading, setLoading] = useState(true),
+    [revision, setRevision] = useState(0);
+  useEffect(() => {
+    let active = true;
+    const timer = setTimeout(() => {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: "15",
+        q: query,
+        status,
+        category,
+      });
+      requestJson<PostsResponse>(`/api/admin/posts?${params}`)
+        .then((result) => {
+          if (active) {
+            setData(result);
+            setError("");
+          }
+        })
+        .catch((err) => {
+          if (active) setError(err.message);
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+    }, 200);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [page, query, status, category, revision]);
+  function change(post: ApiPost) {
+    setData((current) => ({
+      ...current,
+      posts: current.posts.map((item) => (item._id === post._id ? post : item)),
+    }));
+    setRevision((n) => n + 1);
+  }
+  return (
+    <div className="p-5 md:p-9">
+      <PageHeading
+        title="Posts"
+        description="Shape your stories, manage drafts and keep your publication up to date."
+      >
+        <Link href="/admin/dashboard/posts/create" className={primaryButton}>
+          Create post
+        </Link>
+      </PageHeading>
+      <div className="mb-6 grid gap-3 md:grid-cols-[1fr_200px_200px]">
+        <input
+          aria-label="Search posts"
+          className={input}
+          placeholder="Search articles by title..."
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setPage(1);
+          }}
+        />
+        <select
+          aria-label="Publication status"
+          className={input}
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+        >
+          <option value="">All statuses</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+        </select>
+        <select
+          aria-label="Category"
+          className={input}
+          value={category}
+          onChange={(e) => {
+            setCategory(e.target.value);
+            setPage(1);
+          }}
+        >
+          <option value="">All categories</option>
+          {[
+            "news",
+            "sports",
+            "fashion",
+            "tech",
+            "science",
+            "short stories",
+          ].map((c) => (
+            <option key={c}>{c}</option>
+          ))}
+        </select>
+      </div>
+      <ErrorNotice message={error} />
+      <section className="rounded-xl border border-[#e5ded4] bg-white">
+        <PostTable
+          posts={data.posts}
+          loading={loading}
+          onChange={change}
+          onDelete={() => {
+            setPage(1);
+            setRevision((n) => n + 1);
+          }}
+          onError={setError}
+        />
+        <Pagination {...data.pagination} onChange={setPage} />
+      </section>
+    </div>
+  );
 }

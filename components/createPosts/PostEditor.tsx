@@ -92,7 +92,7 @@ export function PostEditor({ onChange, initialBlocks }: PostEditorProps) {
         reportFormatState: setFormatState,
       }}
     >
-      <div className="border border-outline/20 rounded-sm overflow-hidden bg-surface">
+      <div className="border border-[#e1dbd1] rounded-sm overflow-hidden bg-white">
         <AddBlockMenu
           onAdd={(type) => addBlock(type)}
           onBold={() => formatterRef.current("bold")}
@@ -129,11 +129,11 @@ export function PostEditor({ onChange, initialBlocks }: PostEditorProps) {
           </DndContext>
         </div>
 
-        <div className="px-4 py-2 border-t border-outline/10 bg-surface-container-low flex items-center justify-between">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-outline/50">
+        <div className="px-4 py-2 border-t border-[#e1dbd1] bg-[#f8f5ef] flex items-center justify-between">
+          <span className="text-sm font-bold uppercase tracking-widest text-[#77736c]">
             {blocks.length} {blocks.length === 1 ? "block" : "blocks"}
           </span>
-          <span className="text-[10px] text-outline/40 uppercase tracking-widest">
+          <span className="text-sm text-[#77736c] uppercase tracking-widest">
             Drag blocks to reorder
           </span>
         </div>

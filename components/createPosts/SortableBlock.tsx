@@ -43,7 +43,7 @@ export function SortableBlock({
           {...attributes}
           {...listeners}
           type="button"
-          className="mt-2.5 p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing text-outline/50 hover:text-primary shrink-0"
+          className="mt-2.5 p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing text-[#77736c] hover:text-primary shrink-0"
           title="Drag to reorder"
         >
           <MdDragIndicator size={18} />
@@ -58,7 +58,7 @@ export function SortableBlock({
         <button
           type="button"
           onClick={onRemove}
-          className="mt-2.5 p-1 cursor-pointer opacity-0 group-hover:opacity-100 rounded-full active:bg-primary active:text-white hover:bg-gray-200 transition-opacity text-outline/50 hover:text-error shrink-0"
+          className="mt-2.5 p-1 cursor-pointer opacity-0 group-hover:opacity-100 rounded-full active:bg-primary active:text-white hover:bg-gray-200 transition-opacity text-[#77736c] hover:text-red-700 shrink-0"
           title="Remove block"
         >
           <MdDeleteOutline size={18} />

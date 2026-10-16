@@ -16,6 +16,7 @@ export type ApiPost = {
   readTime?: number;
   isFeatured?: boolean;
   viewCount?: number;
+  commentCount?: number;
   likes?: number;
   dislikes?: number;
   createdAt?: string;
@@ -28,7 +29,12 @@ export type PostsResponse = {
 };
 
 export class ApiError extends Error {
-  constructor(message: string, public status: number) { super(message); }
+  constructor(
+    message: string,
+    public status: number,
+  ) {
+    super(message);
+  }
 }
 
 export async function requestJson<T>(
@@ -39,7 +45,9 @@ export async function requestJson<T>(
     ...init,
     credentials: "include",
     headers: {
-      ...(init?.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
+      ...(init?.body instanceof FormData
+        ? {}
+        : { "Content-Type": "application/json" }),
       ...init?.headers,
     },
   });
@@ -49,7 +57,17 @@ export async function requestJson<T>(
     error?: string;
   };
   if (!response.ok) {
-    throw new ApiError(body.message ?? body.error ?? "The request could not be completed.", response.status);
+    if (
+      typeof window !== "undefined" &&
+      [401, 403].includes(response.status) &&
+      path.startsWith("/api/admin/") &&
+      !path.includes("/auth/")
+    )
+      window.dispatchEvent(new Event("admin-session-expired"));
+    throw new ApiError(
+      body.message ?? body.error ?? "The request could not be completed.",
+      response.status,
+    );
   }
   return body;
 }
@@ -83,3 +101,14 @@ export function friendlyDate(value?: string) {
   }).format(new Date(value));
 }
 
+export function getAdminPost(id: string) {
+  return requestJson<{ post: ApiPost }>(`/api/admin/posts/id/${id}`);
+}
+export type Overview = {
+  posts: number;
+  published: number;
+  users: number;
+  comments: number;
+  subscribers: number;
+  views: number;
+};

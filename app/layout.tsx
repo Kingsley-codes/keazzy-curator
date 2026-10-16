@@ -22,7 +22,8 @@ export const metadata: Metadata = {
   description:
     "Independent coverage of news, sports, fashion, technology and science, thoughtfully curated.",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/images/logo.png",
+    apple: "/images/logo.png",
   },
 };
 

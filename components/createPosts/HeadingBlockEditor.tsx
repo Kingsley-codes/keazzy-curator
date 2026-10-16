@@ -1,3 +1,4 @@
+import { RichTextField } from "./RichTextField";
 // components/editor/blocks/HeadingBlockEditor.tsx
 
 import { HeadingBlock, HeadingLevel } from "@/types/editorTypes";
@@ -15,16 +16,15 @@ export function HeadingBlockEditor({ block, onUpdate }: Props) {
         onChange={(e) =>
           onUpdate({ level: Number(e.target.value) as HeadingLevel })
         }
-        className="bg-surface-container text-[10px] font-bold uppercase tracking-widest text-primary px-2 py-1 border-0 focus:ring-0 shrink-0 rounded-sm cursor-pointer"
+        className="bg-[#f1ebe1] text-sm font-bold uppercase tracking-widest text-primary px-2 py-1 border-0 focus:ring-0 shrink-0 rounded-sm cursor-pointer"
       >
         <option value={2}>H2</option>
         <option value={3}>H3</option>
         <option value={4}>H4</option>
       </select>
-      <input
-        type="text"
+      <RichTextField
         value={block.content}
-        onChange={(e) => onUpdate({ content: e.target.value })}
+        onChange={(value) => onUpdate({ content: value })}
         placeholder={
           block.level === 2
             ? "Section heading..."
@@ -32,7 +32,7 @@ export function HeadingBlockEditor({ block, onUpdate }: Props) {
               ? "Sub-heading..."
               : "Minor heading..."
         }
-        className={`w-full bg-transparent border-0 focus:ring-0 py-1 font-headline text-primary placeholder:text-outline/35 outline-none
+        className={`w-full bg-transparent border-0 focus:ring-0 py-1 font-serif text-primary placeholder:text-[#77736c] outline-none
           ${block.level === 2 ? "text-2xl font-bold" : block.level === 3 ? "text-xl font-semibold" : "text-lg font-medium"}`}
       />
     </div>

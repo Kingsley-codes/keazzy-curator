@@ -4,6 +4,7 @@
 // with a single multipart request. Drop this into your lib/ folder and call it
 // from the page's handleSubmit.
 
+import { BACKEND_URL, type ApiPost } from "@/lib/backend";
 import { PostContent, ContentNode } from "@/types/content";
 
 export interface PostFormData {
@@ -101,7 +102,7 @@ function extractImageFiles(
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const API_URL = BACKEND_URL;
 
 /**
  * Build a multipart/form-data request and POST to /api/posts.
@@ -109,7 +110,7 @@ const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
  */
 export async function submitPost(
   data: PostFormData,
-): Promise<{ post: unknown }> {
+): Promise<{ post: ApiPost }> {
   const fd = new FormData();
 
   // ── Hero image ──────────────────────────────────────────────────────────
@@ -122,11 +123,15 @@ export async function submitPost(
   fd.append("status", data.status);
   fd.append("isFeatured", String(data.isFeatured));
 
-  const tags = data.tags
-    .split(",")
-    .map((t) => t.trim())
-    .filter(Boolean);
-  tags.forEach((tag) => fd.append("tags[]", tag));
+  fd.append(
+    "tags",
+    JSON.stringify(
+      data.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+    ),
+  );
 
   // ── Content images ──────────────────────────────────────────────────────
   const contentFiles: File[] = [];
@@ -155,7 +160,9 @@ export async function submitPost(
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(
-      (body as { error?: string }).error ?? "Failed to save post.",
+      (body as { message?: string; error?: string }).message ??
+        (body as { error?: string }).error ??
+        "Failed to save post.",
     );
   }
 
@@ -168,7 +175,7 @@ export async function submitPost(
 export async function updatePost(
   id: string,
   data: Partial<PostFormData>,
-): Promise<{ post: unknown }> {
+): Promise<{ post: ApiPost }> {
   const fd = new FormData();
 
   if (data.heroImage) {
@@ -180,13 +187,16 @@ export async function updatePost(
   if (data.status) fd.append("status", data.status);
   if (data.isFeatured !== undefined)
     fd.append("isFeatured", String(data.isFeatured));
-  if (data.tags !== undefined) {
-    data.tags
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean)
-      .forEach((tag) => fd.append("tags[]", tag));
-  }
+  if (data.tags !== undefined)
+    fd.append(
+      "tags",
+      JSON.stringify(
+        data.tags
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean),
+      ),
+    );
 
   if (data.content) {
     const contentFiles: File[] = [];
@@ -216,7 +226,9 @@ export async function updatePost(
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(
-      (body as { error?: string }).error ?? "Failed to update post.",
+      (body as { message?: string; error?: string }).message ??
+        (body as { error?: string }).error ??
+        "Failed to update post.",
     );
   }
 

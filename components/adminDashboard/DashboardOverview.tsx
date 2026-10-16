@@ -1,263 +1,124 @@
 "use client";
-
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import {
-  FiEdit2,
-  FiEye,
-  FiFileText,
-  FiFolder,
-  FiImage,
-  FiMessageCircle,
-  FiTrash2,
-  FiUsers,
-} from "react-icons/fi";
-import { ApiPost, deletePost, friendlyDate, getPosts } from "@/lib/backend";
-
+import { useEffect, useState } from "react";
+import { FiEdit3, FiUsers, FiMail, FiArrowUpRight } from "react-icons/fi";
+import { ApiPost, getPosts, requestJson, Overview } from "@/lib/backend";
+import { PageHeading, ErrorNotice } from "./AdminUI";
+import { PostTable } from "./PostTable";
+const actions = [
+  {
+    title: "Create post",
+    text: "Turn your next idea into a story worth reading.",
+    href: "/admin/dashboard/posts/create",
+    Icon: FiEdit3,
+  },
+  {
+    title: "Manage users",
+    text: "Get to know your readers and manage their access.",
+    href: "/admin/dashboard/users",
+    Icon: FiUsers,
+  },
+  {
+    title: "Newsletter",
+    text: "View and manage your newsletter subscribers.",
+    href: "/admin/dashboard/newsletter",
+    Icon: FiMail,
+  },
+];
 export default function DashboardOverview() {
-  const [posts, setPosts] = useState<ApiPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [posts, setPosts] = useState<ApiPost[]>([]),
+    [stats, setStats] = useState<Overview | null>(null),
+    [loading, setLoading] = useState(true),
+    [error, setError] = useState(""),
+    [revision, setRevision] = useState(0);
   useEffect(() => {
-    getPosts()
-      .then((value) => setPosts(value.posts))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
-  const totals = useMemo(
-    () => ({
-      views: posts.reduce((sum, post) => sum + (post.viewCount ?? 0), 0),
-      published: posts.filter((post) => post.status === "published").length,
-    }),
-    [posts],
-  );
-  async function remove(id: string) {
-    if (
-      !window.confirm(
-        "Delete this post and its uploaded images? This cannot be undone.",
-      )
-    )
-      return;
-    try {
-      await deletePost(id);
-      setPosts((current) => current.filter((post) => post._id !== id));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Delete failed.");
-    }
-  }
+    let active = true;
+    Promise.all([getPosts(1, 5), requestJson<Overview>("/api/admin/overview")])
+      .then(([data, overview]) => {
+        if (active) {
+          setPosts(data.posts);
+          setStats(overview);
+          setError("");
+        }
+      })
+      .catch((err) => {
+        if (active) setError(err.message);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [revision]);
   return (
-    <div className="p-5 md:p-8">
-      <div className="flex flex-wrap items-start justify-between gap-5">
-        <div>
-          <p className="font-serif text-lg">Welcome back,</p>
-          <h1 className="font-serif text-5xl font-semibold">Administrator!</h1>
-          <p className="mt-1 text-sm text-[#555]">
-            Here’s what’s happening with Keazzy’s Curations today.
-          </p>
-        </div>
-        <div className="rounded-md bg-[#eee5d6] px-7 py-4 font-serif text-lg italic text-[#382b1d]">
-          “ Inform. Inspire. Empower. ”
-        </div>
+    <div className="p-5 md:p-9">
+      <PageHeading
+        title="Your publication, at a glance"
+        description="A home for your stories and the community growing around them."
+      />
+      <ErrorNotice message={error} />
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          ["Total posts", stats?.posts],
+          ["Published", stats?.published],
+          ["Readers", stats?.users],
+          ["Article views", stats?.views],
+        ].map(([label, value]) => (
+          <div
+            key={label}
+            className="rounded-xl border border-[#e5ded4] bg-white p-6"
+          >
+            <p className="text-base text-[#6b645b]">{label}</p>
+            <strong className="mt-3 block font-serif text-4xl">
+              {typeof value === "number" ? value.toLocaleString() : "--"}
+            </strong>
+          </div>
+        ))}
       </div>
-      {error && (
-        <p className="mt-5 rounded-md bg-[#fff0ed] p-3 text-xs text-[#9c331f]">
-          {error} Make sure the backend is running.
-        </p>
-      )}
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Metric
-          icon={<FiFileText />}
-          label="Total Posts"
-          value={loading ? "…" : posts.length}
-        />
-        <Metric
-          icon={<FiMessageCircle />}
-          label="Published Posts"
-          value={loading ? "…" : totals.published}
-        />
-        <Metric
-          icon={<FiUsers />}
-          label="Total Users"
-          value="—"
-          note="API not available"
-        />
-        <Metric
-          icon={<FiEye />}
-          label="Total Views"
-          value={loading ? "…" : totals.views.toLocaleString()}
-        />
-      </div>
-      <div className="mt-5 grid gap-5 xl:grid-cols-[1.65fr_.95fr]">
-        <section className="rounded-lg border border-[#e6e2db] bg-white p-4">
-          <div className="flex justify-between">
-            <h2 className="font-serif text-xl font-semibold">Recent Posts</h2>
+      <section className="my-9">
+        <h2 className="mb-4 font-serif text-2xl font-semibold">
+          Quick actions
+        </h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          {actions.map(({ title, text, href, Icon }) => (
             <Link
-              href="/admin/dashboard/posts"
-              className="text-xs text-[#98651f] underline"
+              key={title}
+              href={href}
+              className="group rounded-xl border border-[#e0d6c7] bg-[#fbf8f2] p-6 transition hover:-translate-y-0.5 hover:border-[#b58b51] hover:bg-white"
             >
-              View All
+              <div className="flex items-center justify-between">
+                <span className="grid size-12 place-items-center rounded-lg bg-[#eee4d3] text-2xl text-[#896129]">
+                  <Icon />
+                </span>
+                <FiArrowUpRight className="text-xl text-[#91816b]" />
+              </div>
+              <h3 className="mt-5 text-lg font-semibold">{title}</h3>
+              <p className="mt-2 text-base leading-relaxed text-[#6b645b]">
+                {text}
+              </p>
             </Link>
-          </div>
-          <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[650px] text-left text-[11px]">
-              <thead className="bg-[#f5f4f1] text-[9px] uppercase">
-                <tr>
-                  <th className="p-3">Title</th>
-                  <th>Category</th>
-                  <th>Status</th>
-                  <th>Views</th>
-                  <th>Created</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#eeeae4]">
-                {posts.slice(0, 5).map((post) => (
-                  <tr key={post._id}>
-                    <td className="max-w-[250px] p-3 font-medium">
-                      {post.title}
-                    </td>
-                    <td className="capitalize">{post.category}</td>
-                    <td>
-                      <Status value={post.status} />
-                    </td>
-                    <td>{post.viewCount ?? 0}</td>
-                    <td>{friendlyDate(post.createdAt)}</td>
-                    <td>
-                      <div className="flex gap-2">
-                        <Link
-                          aria-label="Preview"
-                          href={`/posts/${post.slug}`}
-                          className="rounded border border-[#ddd] p-2"
-                        >
-                          <FiEye />
-                        </Link>
-                        <button
-                          aria-label="Delete"
-                          onClick={() => remove(post._id)}
-                          className="rounded border border-[#ddd] p-2 text-red-500"
-                        >
-                          <FiTrash2 />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {!loading && posts.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="p-8 text-center text-[#777]">
-                      No posts yet. Create your first story.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-        <div className="space-y-5">
-          <section className="rounded-lg border border-[#e6e2db] bg-white p-4">
-            <h2 className="font-serif text-xl font-semibold">Quick Actions</h2>
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <Action
-                href="/admin/dashboard/posts/create"
-                icon={<FiEdit2 />}
-                title="Create New Post"
-              />
-              <Action
-                href="/admin/dashboard/posts"
-                icon={<FiFolder />}
-                title="Manage Posts"
-              />
-              <Action
-                href="/admin/dashboard/posts/create"
-                icon={<FiImage />}
-                title="Upload Media"
-              />
-              <Action icon={<FiUsers />} title="Manage Users" disabled />
-            </div>
-          </section>
-          <section className="rounded-lg border border-[#e6e2db] bg-white p-5">
-            <h2 className="font-serif text-xl font-semibold">Content pulse</h2>
-            <div className="mt-5 flex h-28 items-end gap-2">
-              {[32, 48, 43, 57, 65, 58, 86].map((height, index) => (
-                <span
-                  key={index}
-                  className="flex-1 rounded-t bg-[#b98743]"
-                  style={{ height: `${height}%`, opacity: 0.45 + index * 0.07 }}
-                />
-              ))}
-            </div>
-            <p className="mt-3 text-[10px] text-[#777]">
-              A visual summary of recent publishing activity.
-            </p>
-          </section>
+          ))}
         </div>
-      </div>
-    </div>
-  );
-}
-function Metric({
-  icon,
-  label,
-  value,
-  note,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string | number;
-  note?: string;
-}) {
-  return (
-    <div className="flex min-h-28 items-center gap-5 rounded-lg border border-[#e8e4de] bg-white p-5">
-      <span className="text-3xl">{icon}</span>
-      <div>
-        <p className="text-xs">{label}</p>
-        <strong className="font-serif text-3xl">{value}</strong>
-        <p className="text-[9px] text-[#888]">
-          {note ?? "Live from your publication"}
-        </p>
-      </div>
-    </div>
-  );
-}
-function Status({ value }: { value: ApiPost["status"] }) {
-  return (
-    <span
-      className={`rounded px-3 py-1 text-[9px] capitalize ${value === "published" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}
-    >
-      {value}
-    </span>
-  );
-}
-function Action({
-  href,
-  icon,
-  title,
-  disabled,
-}: {
-  href?: string;
-  icon: React.ReactNode;
-  title: string;
-  disabled?: boolean;
-}) {
-  const content = (
-    <>
-      <span className="text-2xl">{icon}</span>
-      <strong className="mt-4 block text-xs">{title}</strong>
-      <span className="text-[9px] text-[#777]">
-        {disabled ? "Needs backend support" : "Open module →"}
-      </span>
-    </>
-  );
-  return href && !disabled ? (
-    <Link
-      href={href}
-      className="rounded-md border border-[#eee] p-4 hover:border-[#c89b55]"
-    >
-      {content}
-    </Link>
-  ) : (
-    <div className="cursor-not-allowed rounded-md border border-[#eee] bg-[#fafafa] p-4 opacity-55">
-      {content}
+      </section>
+      <section className="rounded-xl border border-[#e5ded4] bg-white">
+        <div className="flex items-center justify-between gap-4 p-6">
+          <h2 className="font-serif text-2xl font-semibold">Recent posts</h2>
+          <Link
+            className="text-base text-[#8c622b] underline underline-offset-4"
+            href="/admin/dashboard/posts"
+          >
+            View all posts
+          </Link>
+        </div>
+        <PostTable
+          posts={posts}
+          loading={loading}
+          onChange={() => setRevision((n) => n + 1)}
+          onDelete={() => setRevision((n) => n + 1)}
+          onError={setError}
+        />
+      </section>
     </div>
   );
 }

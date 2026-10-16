@@ -26,7 +26,7 @@ export function BlockRenderer({ block, onUpdate }: Props) {
   return (
     <div className="w-full">
       {/* Block type label */}
-      <span className="inline-block text-[9px] font-bold uppercase tracking-[0.15em] text-outline/40 mb-1 select-none">
+      <span className="inline-block text-sm font-bold uppercase tracking-[0.15em] text-[#77736c] mb-1 select-none">
         {BLOCK_LABEL[block.type]}
       </span>
 

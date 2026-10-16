@@ -1,3 +1,4 @@
+import { contentHtml } from "@/lib/post-content";
 // components/editor/blockHelpers.ts
 import { ContentNode, PostContent } from "@/types/content";
 import { Block, BlockType, ParagraphBlock } from "@/types/editorTypes";
@@ -98,11 +99,13 @@ export function blocksToJSON(blocks: Block[]): PostContent {
           ];
         case "image":
           return block.images
-            .filter((img) => img.src)
+            .filter((img) => img.src || img._file || img.file)
             .map((img) => ({
               type: "image",
               attrs: {
-                src: img.src,
+                src: img.src ?? img.preview,
+                _file: img._file ?? img.file,
+                _key: img._key,
                 alt: img.alt,
                 publicId: img.publicId,
                 layout: block.layout,
@@ -118,4 +121,58 @@ export function safeBlocks(blocks: Block[]): Block[] {
   return blocks.length === 0
     ? [createBlock("paragraph") as ParagraphBlock]
     : blocks;
+}
+
+export function jsonToBlocks(content: PostContent): Block[] {
+  return safeBlocks(
+    content.content.reduce<Block[]>((blocks, node) => {
+      const id = generateId();
+      const html = contentHtml(node.content ?? []);
+      if (node.type === "paragraph")
+        blocks.push({ id, type: "paragraph", content: html });
+      else if (node.type === "heading")
+        blocks.push({
+          id,
+          type: "heading",
+          level: node.attrs?.level === 3 ? 3 : node.attrs?.level === 4 ? 4 : 2,
+          content: html,
+        });
+      else if (node.type === "blockquote")
+        blocks.push({ id, type: "blockquote", content: html });
+      else if (node.type === "bulletList" || node.type === "orderedList")
+        blocks.push({
+          id,
+          type: node.type,
+          items: (node.content ?? []).map((item) =>
+            contentHtml(item.content ?? []),
+          ),
+        });
+      else if (node.type === "image") {
+        const image = {
+          file: null,
+          src: String(node.attrs?.src ?? ""),
+          preview: String(node.attrs?.src ?? ""),
+          alt: String(node.attrs?.alt ?? ""),
+          publicId: String(node.attrs?.publicId ?? ""),
+        };
+        const previous = blocks.at(-1);
+        if (
+          node.attrs?.layout === "side-by-side" &&
+          previous?.type === "image" &&
+          previous.layout === "side-by-side" &&
+          previous.images.length === 1
+        )
+          previous.images.push(image);
+        else
+          blocks.push({
+            id,
+            type: "image",
+            layout:
+              node.attrs?.layout === "side-by-side" ? "side-by-side" : "single",
+            images: [image],
+          });
+      } else if (html) blocks.push({ id, type: "paragraph", content: html });
+      return blocks;
+    }, []),
+  );
 }

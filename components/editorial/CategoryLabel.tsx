@@ -8,6 +8,18 @@ const colors: Record<Category, string> = {
   Science: "text-[#665194]",
 };
 
-export function CategoryLabel({ category, light = false }: { category: Category; light?: boolean }) {
-  return <span className={`text-[10px] font-semibold tracking-[0.16em] uppercase ${light ? "text-[#e6c98f]" : colors[category]}`}>{category}</span>;
+export function CategoryLabel({
+  category,
+  light = false,
+}: {
+  category: Category | string;
+  light?: boolean;
+}) {
+  return (
+    <span
+      className={`text-sm font-semibold tracking-[0.16em] uppercase ${light ? "text-[#e6c98f]" : (colors[category as Category] ?? "text-[#8e6b3d]")}`}
+    >
+      {category}
+    </span>
+  );
 }

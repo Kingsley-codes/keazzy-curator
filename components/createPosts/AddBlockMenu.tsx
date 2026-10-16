@@ -94,7 +94,7 @@ function PortalDropdown({ anchorRef, onAdd, onClose }: PortalDropdownProps) {
     <div
       ref={dropdownRef}
       style={{ top: coords.top, left: coords.left }}
-      className="fixed z-9999 bg-surface border border-outline/20 shadow-xl w-52 py-1 rounded-sm"
+      className="fixed z-9999 bg-white border border-[#e1dbd1] shadow-xl w-52 py-1 rounded-sm"
     >
       {BLOCK_OPTIONS.map((opt) => (
         <button
@@ -104,7 +104,7 @@ function PortalDropdown({ anchorRef, onAdd, onClose }: PortalDropdownProps) {
             onAdd(opt.type);
             onClose();
           }}
-          className="flex cursor-pointer hover:bg-gray-200 items-center gap-2.5 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-surface-container transition-colors w-full text-left"
+          className="flex cursor-pointer hover:bg-gray-200 items-center gap-2.5 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-primary hover:bg-[#f1ebe1] transition-colors w-full text-left"
         >
           {opt.icon}
           {opt.label}
@@ -133,7 +133,7 @@ export function AddBlockMenu({
           ref={anchorRef}
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="flex items-center cursor-pointer hover:bg-gray-300 px-1 gap-1 text-[10px] font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors py-1"
+          className="flex items-center cursor-pointer hover:bg-gray-300 px-1 gap-1 text-sm font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors py-1"
         >
           <MdAdd size={14} />
           Add block
@@ -151,7 +151,7 @@ export function AddBlockMenu({
 
   // Full toolbar row
   return (
-    <div className="flex flex-wrap items-center gap-1 px-3 py-2 bg-surface-container-low border-b border-outline/15">
+    <div className="flex flex-wrap items-center gap-1 px-3 py-2 bg-[#f8f5ef] border-b border-[#e1dbd1]">
       {/* ── Format buttons ── */}
       {(onBold || onItalic) && (
         <>
@@ -163,7 +163,7 @@ export function AddBlockMenu({
                 onBold();
               }}
               title="Bold — select text in a paragraph first"
-              className={`flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors rounded-sm ${
+              className={`flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-sm font-bold uppercase tracking-wider transition-colors rounded-sm ${
                 formatState?.isBold
                   ? "bg-primary text-white"
                   : "text-on-surface-variant hover:bg-gray-200 text-gray-900 active:text-white active:bg-primary"
@@ -181,7 +181,7 @@ export function AddBlockMenu({
                 onItalic();
               }}
               title="Italic — select text in a paragraph first"
-              className={`flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors rounded-sm ${
+              className={`flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-sm font-bold uppercase tracking-wider transition-colors rounded-sm ${
                 formatState?.isItalic
                   ? "bg-primary text-white"
                   : "text-on-surface-variant hover:bg-gray-200 text-gray-900 active:text-white active:bg-primary"
@@ -203,7 +203,7 @@ export function AddBlockMenu({
           type="button"
           onClick={() => onAdd(opt.type)}
           title={opt.label}
-          className="flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant active:bg-primary active:text-white hover:bg-gray-200 hover:text-gray-900 active: transition-colors rounded-sm"
+          className="flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-on-surface-variant active:bg-primary active:text-white hover:bg-gray-200 hover:text-gray-900 active: transition-colors rounded-sm"
         >
           {opt.icon}
           <span>{opt.label}</span>

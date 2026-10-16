@@ -1,5 +1,6 @@
 "use client";
 
+import { Brand } from "@/components/site/Brand";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
@@ -174,6 +175,7 @@ export function AuthScreen({ mode, admin = false }: { mode: Mode; admin?: boolea
 
       <section className="flex items-center justify-center bg-[radial-gradient(circle_at_100%_0,#f5f0e7_0,transparent_34%)] bg-[#fdfcf9] px-[22px] py-[55px] min-[900px]:px-[7vw]">
         <form onSubmit={submit} className="w-full max-w-[500px]">
+          <div className="mb-8"><Brand /></div>
           <p className="text-[11px] font-bold uppercase tracking-[.18em] text-[#a66d25]">
             {admin ? "Administrator access" : signup ? "Create an account" : "Welcome back"}
           </p>

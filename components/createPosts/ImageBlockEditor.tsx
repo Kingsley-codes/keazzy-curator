@@ -52,7 +52,7 @@ export function ImageBlockEditor({ block, onUpdate }: Props) {
     <div className="space-y-3 py-1">
       {/* Layout Toggle */}
       <div className="flex items-center gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-outline/60">
+        <span className="text-sm font-bold uppercase tracking-widest text-[#77736c]">
           Layout:
         </span>
         {(["single", "side-by-side"] as const).map((l) => (
@@ -60,7 +60,7 @@ export function ImageBlockEditor({ block, onUpdate }: Props) {
             key={l}
             type="button"
             onClick={() => setLayout(l)}
-            className={`text-[10px] cursor-pointer font-bold uppercase tracking-widest px-3 py-1 rounded-sm transition-colors ${
+            className={`text-sm cursor-pointer font-bold uppercase tracking-widest px-3 py-1 rounded-sm transition-colors ${
               block.layout === l
                 ? "bg-primary text-gray-100"
                 : "bg-gray-50 text-outline hover:bg-gray-200"
@@ -78,7 +78,7 @@ export function ImageBlockEditor({ block, onUpdate }: Props) {
         {block.images.map((img, index) => (
           <div key={index} className="space-y-2">
             {img.preview ? (
-              <div className="relative aspect-video bg-surface-container-low overflow-hidden rounded-sm">
+              <div className="relative aspect-video bg-[#f8f5ef] overflow-hidden rounded-sm">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={img.preview}
@@ -90,23 +90,24 @@ export function ImageBlockEditor({ block, onUpdate }: Props) {
                   onClick={() =>
                     updateImage(index, {
                       file: null,
+                      _file: undefined,
                       preview: "",
                       src: "",
                       publicId: "",
                     })
                   }
-                  className="absolute top-2 right-2 bg-primary text-on-primary p-1 rounded-sm hover:opacity-80 transition-opacity"
+                  className="absolute top-2 right-2 bg-primary text-white p-1 rounded-sm hover:opacity-80 transition-opacity"
                 >
                   <MdClose size={14} />
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center aspect-video border border-dashed border-outline/25 cursor-pointer hover:border-primary hover:bg-surface-container-low transition-all rounded-sm group/upload">
+              <label className="flex flex-col items-center justify-center aspect-video border border-dashed border-[#e1dbd1] cursor-pointer hover:border-primary hover:bg-[#f8f5ef] transition-all rounded-sm group/upload">
                 <MdAddPhotoAlternate
                   size={28}
-                  className="text-outline/40 group-hover/upload:text-primary transition-colors mb-1.5"
+                  className="text-[#77736c] group-hover/upload:text-primary transition-colors mb-1.5"
                 />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-outline/50 group-hover/upload:text-primary transition-colors">
+                <span className="text-sm font-bold uppercase tracking-widest text-[#77736c] group-hover/upload:text-primary transition-colors">
                   {block.layout === "side-by-side"
                     ? index === 0
                       ? "Left image"
@@ -130,7 +131,7 @@ export function ImageBlockEditor({ block, onUpdate }: Props) {
               value={img.alt}
               onChange={(e) => updateImage(index, { alt: e.target.value })}
               placeholder="Alt text for accessibility..."
-              className="w-full bg-transparent border-0 border-b border-outline/15 focus:border-primary focus:ring-0 py-1 font-body text-xs text-primary placeholder:text-outline/35 outline-none transition-colors"
+              className="w-full bg-transparent border-0 border-b border-[#e1dbd1] focus:border-primary focus:ring-0 py-1 font-sans text-sm text-primary placeholder:text-[#77736c] outline-none transition-colors"
             />
           </div>
         ))}

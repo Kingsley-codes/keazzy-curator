@@ -137,7 +137,7 @@ export function ParagraphBlockEditor({ block, onUpdate }: Props) {
           }, 150);
         }}
         data-placeholder="Write a paragraph..."
-        className="w-full bg-transparent border-0 focus:ring-0 py-2 font-body text-base text-primary placeholder:text-outline/35 leading-relaxed outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-outline/35 empty:before:pointer-events-none"
+        className="w-full bg-transparent border-0 focus:ring-0 py-2 font-sans text-base text-primary placeholder:text-[#77736c] leading-relaxed outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-[#77736c] empty:before:pointer-events-none"
       />
     </div>
   );
