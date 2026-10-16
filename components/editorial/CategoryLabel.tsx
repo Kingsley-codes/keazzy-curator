@@ -6,6 +6,7 @@ const colors: Record<Category, string> = {
   Fashion: "text-[#a86d70]",
   Tech: "text-[#b45f2d]",
   Science: "text-[#665194]",
+  "Short Stories": "text-[#8e6b3d]",
 };
 
 export function CategoryLabel({
