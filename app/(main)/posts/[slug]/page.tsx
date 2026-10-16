@@ -12,12 +12,8 @@ import { NewsletterSignup } from "@/components/editorial/NewsletterSignup";
 import { Comments } from "@/components/posts/Comments";
 import { RelatedPosts } from "@/components/posts/RelatedPosts";
 import { SiteContainer } from "@/components/site/SiteContainer";
-import { BACKEND_URL, type ApiPost } from "@/lib/backend";
-import { getPost, posts } from "@/lib/editorial-data";
-
-export function generateStaticParams() {
-  return posts.map(({ slug }) => ({ slug }));
-}
+import { BACKEND_URL, getPublicPosts, type ApiPost } from "@/lib/backend";
+import { images, toEditorialPost } from "@/lib/editorial-data";
 
 async function getBackendPost(slug: string): Promise<ApiPost | null> {
   try {
@@ -38,30 +34,25 @@ export async function generateMetadata({
   params,
 }: PageProps<"/posts/[slug]">): Promise<Metadata> {
   const slug = (await params).slug,
-    live = await getBackendPost(slug),
-    fallback = getPost(slug);
+    live = await getBackendPost(slug);
   if (live)
     return {
       title: `${live.title} | Keazzy's Curations`,
       description: contentExcerpt(live.content?.content).slice(0, 155),
     };
-  return fallback
-    ? {
-        title: `${fallback.title} | Keazzy's Curations`,
-        description: fallback.excerpt,
-      }
-    : {};
+  return {};
 }
 
 export default async function ArticlePage({
   params,
 }: PageProps<"/posts/[slug]">) {
-  const slug = (await params).slug,
-    live = await getBackendPost(slug),
-    fallback = getPost(slug);
-  if (!live && !fallback) notFound();
-  const post = live
-    ? {
+  const slug = (await params).slug;
+  const [live, listing] = await Promise.all([
+    getBackendPost(slug),
+    getPublicPosts(1, 100).catch(() => null),
+  ]);
+  if (!live) notFound();
+  const post = {
         slug: live.slug,
         title: live.title,
         excerpt: contentExcerpt(live.content?.content).slice(0, 180),
@@ -74,11 +65,13 @@ export default async function ArticlePage({
             }).format(new Date(live.createdAt))
           : "Recently",
         readingTime: `${live.readTime ?? 1} min read`,
-        image: live.heroImage?.src ?? posts[0].image,
+        image: live.heroImage?.src ?? images.news,
         imageAlt: live.heroImage?.alt ?? live.title,
-      }
-    : fallback!;
-  const related = posts.filter((item) => item.slug !== post.slug).slice(3, 7);
+      };
+  const related = (listing?.posts ?? [])
+    .filter((item) => item.slug !== post.slug)
+    .slice(0, 4)
+    .map(toEditorialPost);
   return (
     <main>
       <SiteContainer className="py-7 md:py-10">
@@ -95,6 +88,11 @@ export default async function ArticlePage({
           <article>
             <header>
               <CategoryLabel category={post.category} />
+              {live?.isFeatured && (
+                <span className="ml-3 inline-flex rounded-full bg-[#f4ead8] px-3 py-1 align-middle text-[10px] font-semibold tracking-wide text-[#8c622b]">
+                  Featured
+                </span>
+              )}
               <h1 className="mt-3 max-w-[820px] text-balance font-serif text-[44px] leading-[1.08] font-medium md:text-[58px]">
                 {post.title}
               </h1>

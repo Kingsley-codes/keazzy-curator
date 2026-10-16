@@ -78,6 +78,13 @@ export function getPosts(page = 1, limit = 100) {
   );
 }
 
+export function getPublicPosts(page = 1, limit = 100) {
+  return requestJson<PostsResponse>(
+    `/api/posts?page=${page}&limit=${limit}`,
+    { cache: "no-store" },
+  );
+}
+
 export function deletePost(id: string) {
   return requestJson<{ success: true; message: string }>(
     `/api/admin/posts/${id}`,

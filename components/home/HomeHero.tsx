@@ -2,16 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { CategoryLabel } from "@/components/editorial/CategoryLabel";
 import { SiteContainer } from "@/components/site/SiteContainer";
-import { images, posts } from "@/lib/editorial-data";
+import type { Post } from "@/lib/editorial-data";
 
-export function HomeHero() {
-  const featured = posts[2];
-  const secondary = [posts[7], posts[6], posts[4]];
+export function HomeHero({ posts }: { posts: Post[] }) {
+  const [featured, ...secondary] = posts;
+  if (!featured) return null;
   return (
     <SiteContainer className="grid bg-[#111] p-0 lg:h-[520px] lg:grid-cols-[minmax(0,2.15fr)_minmax(320px,1fr)]">
       <article className="group relative h-[570px] overflow-hidden lg:h-auto">
         <Image
-          src={images.hero}
+          src={featured.image}
           alt={featured.imageAlt}
           fill
           priority
@@ -20,13 +20,12 @@ export function HomeHero() {
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/15 to-transparent lg:bg-linear-to-r lg:from-black/90 lg:via-black/50 lg:to-transparent" />
         <div className="absolute right-5 bottom-[74px] left-5 text-white lg:right-auto lg:bottom-[76px] lg:left-[34px] lg:w-[70%] lg:max-w-[570px]">
-          <CategoryLabel category="Fashion" light />
+          <CategoryLabel category={featured.category} light />
           <h1 className="mt-3 text-balance font-serif text-[42px] leading-[.96] font-medium sm:text-[52px] xl:text-[66px]">
-            The New Era of African Fashion on the Global Stage
+            {featured.title}
           </h1>
           <p className="mt-4 max-w-[560px] text-[13px] leading-relaxed lg:text-sm">
-            African fashion is no longer just a trend — it’s a global movement
-            redefining style, identity and innovation.
+            {featured.excerpt}
           </p>
           <Link
             href={`/posts/${featured.slug}`}
@@ -48,7 +47,7 @@ export function HomeHero() {
         </div>
       </article>
       <div className="grid lg:grid-rows-3">
-        {secondary.map((post) => (
+        {secondary.slice(0, 3).map((post) => (
           <Link
             href={`/posts/${post.slug}`}
             key={post.slug}

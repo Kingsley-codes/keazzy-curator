@@ -50,6 +50,11 @@ export function PostTable({
                   )}
                   <span className="max-w-sm font-medium leading-snug group-hover:text-[#986a2f]">
                     {post.title}
+                    {post.isFeatured && (
+                      <span className="ml-2 inline-block rounded-full bg-[#f4ead8] px-2 py-1 align-middle text-[10px] font-semibold text-[#8c622b]">
+                        Featured
+                      </span>
+                    )}
                   </span>
                 </Link>
               </td>

@@ -5,7 +5,7 @@ import { FiChevronDown, FiSearch } from "react-icons/fi";
 import { PostCard } from "@/components/editorial/PostCard";
 import type { Category, Post } from "@/lib/editorial-data";
 
-const filters: (Category | "All")[] = ["All", "News", "Sports", "Fashion", "Tech", "Science"];
+const filters: (Category | "All")[] = ["All", "News", "Sports", "Fashion", "Tech", "Science", "Short Stories"];
 
 export function PostExplorer({ posts, initialCategory = "All" }: { posts: Post[]; initialCategory?: Category | "All" }) {
   const [category, setCategory] = useState<Category | "All">(initialCategory);

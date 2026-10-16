@@ -3,14 +3,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { PostExplorer } from "@/components/posts/PostExplorer";
 import { SiteContainer } from "@/components/site/SiteContainer";
-import { images, posts, type Category } from "@/lib/editorial-data";
+import { images, toEditorialPost, type Category } from "@/lib/editorial-data";
+import { getPublicPosts } from "@/lib/backend";
 
 export const metadata: Metadata = { title: "All Posts | Keazzy's Curations", description: "Explore the latest stories, insights and ideas from Keazzy's Curations." };
 
-const validCategories: Category[] = ["News", "Sports", "Fashion", "Tech", "Science"];
+const validCategories: Category[] = ["News", "Sports", "Fashion", "Tech", "Science", "Short Stories"];
 
 export default async function AllPostsPage({ searchParams }: PageProps<"/posts">) {
   const requested = (await searchParams).category;
+  let posts = [] as ReturnType<typeof toEditorialPost>[];
+  try {
+    posts = (await getPublicPosts(1, 100)).posts.map(toEditorialPost);
+  } catch {
+    // Show an empty listing while the backend is unavailable.
+  }
   const formatted = typeof requested === "string" ? `${requested.charAt(0).toUpperCase()}${requested.slice(1).toLowerCase()}` as Category : "All";
   const initialCategory = validCategories.includes(formatted as Category) ? formatted : "All";
   return (

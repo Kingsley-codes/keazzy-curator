@@ -69,9 +69,16 @@ export function PostDetail({ id }: { id: string }) {
       </div>
       <article className="rounded-xl border border-[#e5ded4] bg-white p-5 md:p-10">
         <div className="mx-auto max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-widest text-[#93692f]">
-            {post.category}
-          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-sm font-semibold uppercase tracking-widest text-[#93692f]">
+              {post.category}
+            </p>
+            {post.isFeatured && (
+              <span className="rounded-full bg-[#f4ead8] px-3 py-1 text-[10px] font-semibold tracking-wide text-[#8c622b]">
+                Featured
+              </span>
+            )}
+          </div>
           <h1 className="mt-3 font-serif text-3xl leading-tight md:text-3xl">
             {post.title}
           </h1>
