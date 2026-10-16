@@ -18,7 +18,7 @@ export function PostTable({
 }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[760px] text-left text-base">
+      <table className="w-full min-w-[760px] text-left text-sm">
         <thead className="border-y border-[#e9e3db] bg-[#faf8f4] text-sm text-[#6b645b]">
           <tr>
             {["Article", "Category", "Status", "Views", "Created", ""].map(

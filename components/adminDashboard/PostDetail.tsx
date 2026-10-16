@@ -37,7 +37,7 @@ export function PostDetail({ id }: { id: string }) {
       <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
         <Link
           href="/admin/dashboard/posts"
-          className="text-base text-[#8c622b]"
+          className="text-sm text-[#8c622b]"
         >
           ← All posts
         </Link>
@@ -60,7 +60,7 @@ export function PostDetail({ id }: { id: string }) {
             key={label}
             className="rounded-lg border border-[#e5ded4] bg-white p-5"
           >
-            <p className="text-base text-[#77736c]">{label}</p>
+            <p className="text-sm text-[#77736c]">{label}</p>
             <strong className="mt-2 block text-2xl font-semibold capitalize">
               {value}
             </strong>
@@ -72,10 +72,10 @@ export function PostDetail({ id }: { id: string }) {
           <p className="text-sm font-semibold uppercase tracking-widest text-[#93692f]">
             {post.category}
           </p>
-          <h1 className="mt-3 font-serif text-4xl leading-tight md:text-5xl">
+          <h1 className="mt-3 font-serif text-3xl leading-tight md:text-3xl">
             {post.title}
           </h1>
-          <p className="mt-4 text-base text-[#77736c]">
+          <p className="mt-4 text-sm text-[#77736c]">
             {friendlyDate(post.createdAt)} · {post.readTime ?? 1} min read
           </p>
           {post.heroImage?.src && (

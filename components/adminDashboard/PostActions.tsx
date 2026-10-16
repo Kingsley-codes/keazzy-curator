@@ -94,7 +94,7 @@ export function PostActions({
   }
   const item = toolbar
     ? button
-    : "flex w-full items-center gap-3 rounded px-4 py-3 text-left text-base hover:bg-[#f6f2eb] disabled:opacity-50";
+    : "flex w-full items-center gap-3 rounded px-4 py-3 text-left text-sm hover:bg-[#f6f2eb] disabled:opacity-50";
   const controls = (
     <>
       <Link className={item} href={`/admin/dashboard/posts/${post._id}/edit`}>

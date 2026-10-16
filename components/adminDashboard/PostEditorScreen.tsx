@@ -26,6 +26,6 @@ export function PostEditorScreen({ id }: { id: string }) {
   ) : post ? (
     <PostForm key={post._id} post={post} />
   ) : (
-    <p className="p-9 text-base text-[#77736c]">Loading article...</p>
+    <p className="p-9 text-sm text-[#77736c]">Loading article...</p>
   );
 }

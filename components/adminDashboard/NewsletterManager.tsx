@@ -66,7 +66,7 @@ export default function NewsletterManager() {
       <ErrorNotice message={error} />
       <section className="overflow-hidden rounded-xl border border-[#e5ded4] bg-white">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[550px] text-left text-base">
+          <table className="w-full min-w-[550px] text-left text-sm">
             <thead className="bg-[#faf8f4] text-sm text-[#77736c]">
               <tr>
                 <th className="p-5">Email</th>

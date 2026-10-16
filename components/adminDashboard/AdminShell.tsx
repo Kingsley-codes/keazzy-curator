@@ -47,7 +47,7 @@ export default function AdminShell({
     }
   }
   return (
-    <div className="min-h-dvh bg-[#f6f5f2] text-[#24231f]">
+    <div className="min-h-dvh bg-[#f6f5f2] text-sm text-[#24231f]">
       {open && (
         <button
           className="fixed inset-0 z-30 bg-black/40 md:hidden"
@@ -81,7 +81,7 @@ export default function AdminShell({
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-4 rounded-lg px-4 py-3.5 text-base ${active ? "bg-[#4b3e2c] text-[#f3d5a1]" : "text-[#d1d3cf] hover:bg-white/5"}`}
+                className={`flex items-center gap-4 rounded-lg px-4 py-3.5 text-sm ${active ? "bg-[#4b3e2c] text-[#f3d5a1]" : "text-[#d1d3cf] hover:bg-white/5"}`}
               >
                 <Icon className="text-xl" />
                 {label}
@@ -91,7 +91,7 @@ export default function AdminShell({
         </nav>
         <div className="mt-auto pt-10">
           <div className="rounded-lg border border-white/10 p-5">
-            <p className="font-serif text-2xl italic leading-relaxed">
+            <p className="font-serif text-xl italic leading-relaxed">
               Stories worth sharing.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-[#aeb2ad]">
@@ -100,7 +100,7 @@ export default function AdminShell({
           </div>
           <Link
             href="/"
-            className="mt-5 flex items-center gap-3 px-3 py-3 text-base text-[#d1d3cf]"
+            className="mt-5 flex items-center gap-3 px-3 py-3 text-sm text-[#d1d3cf]"
           >
             Visit website <FiArrowUpRight />
           </Link>
@@ -111,7 +111,7 @@ export default function AdminShell({
           <div className="flex items-center gap-4">
             <button
               aria-label="Open navigation"
-              className="text-2xl md:hidden"
+              className="text-xl md:hidden"
               onClick={() => setOpen(true)}
             >
               <FiMenu />
@@ -122,12 +122,12 @@ export default function AdminShell({
           </div>
           <div className="flex items-center gap-4">
             <div className="hidden text-right sm:block">
-              <strong className="block text-base font-medium">
+              <strong className="block text-sm font-medium">
                 {user.firstName} {user.lastName}
               </strong>
               <span className="text-sm text-[#77736c]">Administrator</span>
             </div>
-            <span className="grid size-11 place-items-center rounded-full bg-[#eee5d7] text-base font-medium text-[#70552f]">
+            <span className="grid size-11 place-items-center rounded-full bg-[#eee5d7] text-sm font-medium text-[#70552f]">
               {user.firstName[0]}
               {user.lastName[0]}
             </span>
@@ -143,7 +143,7 @@ export default function AdminShell({
           </div>
         </header>
         {error && (
-          <p role="alert" className="bg-red-50 p-4 text-base text-red-800">
+          <p role="alert" className="bg-red-50 p-4 text-sm text-red-800">
             {error}
           </p>
         )}

@@ -129,8 +129,8 @@ export default function UsersManager() {
             });
           }}
         >
-          <h2 className="mb-4 font-serif text-2xl">Edit reader profile</h2>
-          <p className="mb-4 text-base text-[#77736c]">{editing.email}</p>
+          <h2 className="mb-4 font-serif text-xl">Edit reader profile</h2>
+          <p className="mb-4 text-sm text-[#77736c]">{editing.email}</p>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-2">
               <span>First name</span>
@@ -173,7 +173,7 @@ export default function UsersManager() {
       )}
       <section className="overflow-hidden rounded-xl border border-[#e5ded4] bg-white">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[850px] text-left text-base">
+          <table className="w-full min-w-[850px] text-left text-sm">
             <thead className="bg-[#faf8f4] text-sm text-[#77736c]">
               <tr>
                 {["Reader", "Status", "Joined", "Actions"].map((label) => (
