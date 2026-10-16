@@ -13,6 +13,7 @@ import {
   MdAdd,
   MdFormatBold,
   MdFormatItalic,
+  MdKeyboardArrowDown,
 } from "react-icons/md";
 import { FormatState } from "./FormatContext";
 
@@ -104,7 +105,7 @@ function PortalDropdown({ anchorRef, onAdd, onClose }: PortalDropdownProps) {
             onAdd(opt.type);
             onClose();
           }}
-          className="flex cursor-pointer hover:bg-gray-200 items-center gap-2.5 px-4 py-2.5 text-sm font-bold uppercase tracking-widest text-primary hover:bg-[#f1ebe1] transition-colors w-full text-left"
+          className="flex cursor-pointer hover:bg-gray-200 items-center gap-2.5 px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-primary hover:bg-[#f1ebe1] transition-colors w-full text-left"
         >
           {opt.icon}
           {opt.label}
@@ -128,15 +129,29 @@ export function AddBlockMenu({
 
   if (compact) {
     return (
-      <>
+      <div className="inline-flex items-center overflow-hidden rounded-sm text-outline transition-colors hover:text-primary">
+        <button
+          type="button"
+          onClick={() => {
+            onAdd("paragraph");
+            handleClose();
+          }}
+          title="Add paragraph"
+          className="flex items-center gap-1 px-1 py-1 text-sm font-bold uppercase tracking-widest hover:bg-gray-300"
+        >
+          <MdAdd size={14} />
+          Add paragraph
+        </button>
         <button
           ref={anchorRef}
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="flex items-center cursor-pointer hover:bg-gray-300 px-1 gap-1 text-sm font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors py-1"
+          aria-label="Choose block type"
+          aria-expanded={open}
+          title="Choose block type"
+          className="grid place-items-center px-1 py-1 hover:bg-gray-300"
         >
-          <MdAdd size={14} />
-          Add block
+          <MdKeyboardArrowDown size={18} />
         </button>
         {open && (
           <PortalDropdown
@@ -145,13 +160,13 @@ export function AddBlockMenu({
             onClose={handleClose}
           />
         )}
-      </>
+      </div>
     );
   }
 
   // Full toolbar row
   return (
-    <div className="flex flex-wrap items-center gap-1 px-3 py-2 bg-[#f8f5ef] border-b border-[#e1dbd1]">
+    <div className="flex bg-[#f8f5ef] flex-wrap items-center gap-1 px-6 py-2 border-b border-[#e1dbd1]">
       {/* ── Format buttons ── */}
       {(onBold || onItalic) && (
         <>
@@ -203,7 +218,7 @@ export function AddBlockMenu({
           type="button"
           onClick={() => onAdd(opt.type)}
           title={opt.label}
-          className="flex items-center cursor-pointer gap-1.5 px-3 py-1.5 text-sm font-bold uppercase tracking-wider text-on-surface-variant active:bg-primary active:text-white hover:bg-gray-200 hover:text-gray-900 active: transition-colors rounded-sm"
+          className="flex items-center cursor-pointer gap-1.5 px-2 py-1.5 text-xs font-bold uppercase tracking-wider text-on-surface-variant active:bg-primary active:text-white hover:bg-gray-200 hover:text-gray-900 active: transition-colors rounded-sm"
         >
           {opt.icon}
           <span>{opt.label}</span>

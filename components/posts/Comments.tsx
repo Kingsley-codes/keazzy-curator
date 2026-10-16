@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useEffectEvent, useState } from "react";
 import { requestJson, friendlyDate, ApiError } from "@/lib/backend";
 import {
@@ -31,6 +32,7 @@ export function Comments({
   admin?: boolean;
   onCountChange?: (count: number) => void;
 }) {
+  const router = useRouter();
   const [data, setData] = useState<CommentData | null>(null),
     [page, setPage] = useState(1),
     [revision, setRevision] = useState(0),
@@ -64,11 +66,15 @@ export function Comments({
       .then(() => {
         if (active) setSignedIn(true);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!active) return;
+        setSignedIn(false);
+        router.replace("/login");
+      });
     return () => {
       active = false;
     };
-  }, [admin]);
+  }, [admin, router]);
   async function send(event: React.FormEvent) {
     event.preventDefault();
     setPending(true);
@@ -82,7 +88,11 @@ export function Comments({
       setReplyTo(null);
       setRevision((n) => n + 1);
     } catch (err) {
-      if (err instanceof ApiError && err.status === 401) setSignedIn(false);
+      if (err instanceof ApiError && [401, 403].includes(err.status)) {
+        setSignedIn(false);
+        router.replace(admin ? "/admin/login" : "/login");
+        return;
+      }
       setError(err instanceof Error ? err.message : "Could not post comment.");
     } finally {
       setPending(false);

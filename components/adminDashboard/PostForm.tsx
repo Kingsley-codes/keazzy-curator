@@ -78,7 +78,7 @@ export function PostForm({ post }: { post?: ApiPost }) {
     setPreview(URL.createObjectURL(next));
   }
   return (
-    <div className="max-w-4xl mx-auto px-6 py-10 text-sm">
+    <div className="max-w-5xl mx-auto px-2 py-10 text-sm">
       {/* Page Header */}
       <div className="mb-12">
         <div className="inline-block bg-primary text-gray-100 px-6 py-1 text-xs font-bold tracking-[0.2em] uppercase mb-6 rounded-sm">
@@ -91,7 +91,7 @@ export function PostForm({ post }: { post?: ApiPost }) {
 
       <ErrorNotice message={error} />
 
-      <div className="space-y-10">
+      <div className="space-y-10 border p-10 rounded-xl border-gray-300">
         {/* Title */}
         <div>
           <label className="block text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3">
@@ -103,7 +103,7 @@ export function PostForm({ post }: { post?: ApiPost }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter article title..."
-            className="w-full focus:outline-none bg-transparent border-0 border-b py-3 font-headline text-2xl text-primary placeholder:text-gray-400"
+            className="w-full focus:outline-none bg-transparent border-0 border-b border-gray-300 focus:border-gray-500 py-3 font-headline text-2xl text-primary placeholder:text-gray-400"
           />
         </div>
 
@@ -115,9 +115,9 @@ export function PostForm({ post }: { post?: ApiPost }) {
             </label>
             <select
               aria-label="Category"
-            value={category}
+              value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-transparent border-0 border-b border-outline/30 focus:border-primary focus:ring-0 py-3 font-body text-sm text-primary"
+              className="w-full bg-transparent border border-gray-300 rounded-lg border-outline/30 focus:border-primary focus:ring-0 py-3 font-body text-sm text-primary"
             >
               <option value="" disabled>
                 Select a category
@@ -147,16 +147,16 @@ export function PostForm({ post }: { post?: ApiPost }) {
             <input
               type="text"
               aria-label="Tags"
-            value={tags}
+              value={tags}
               onChange={(e) => setTags(e.target.value)}
               placeholder="e.g. minimalism, UX, design"
-              className="w-full focus:outline-none bg-transparent border-0 caret-primary border-b border-outline/30 focus:border-primary focus:ring-0 py-3 font-body text-sm text-primary placeholder:text-outline/40"
+              className="w-full focus:outline-none bg-transparent border-0 caret-primary border-b border-gray-300 focus:border-gray-500 focus:ring-0 py-3 font-body text-sm text-primary placeholder:text-outline/40"
             />
           </div>
         </div>
 
         {/* Featured Toggle */}
-        <div className="py-3 border-b border-outline/10">
+        <div className="py-3 border-b border-gray-500">
           <div>
             <label className="block text-xs mb-1.5 font-bold uppercase tracking-[0.2em] text-primary">
               Featured Post
@@ -201,11 +201,16 @@ export function PostForm({ post }: { post?: ApiPost }) {
               />
               <label className="absolute top-3 right-3 cursor-pointer bg-primary text-on-primary px-3 py-2 text-xs font-bold uppercase tracking-widest">
                 Replace image
-                <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="sr-only" onChange={handleHeroImageChange} />
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="sr-only"
+                  onChange={handleHeroImageChange}
+                />
               </label>
             </div>
           ) : (
-            <label className="flex flex-col items-center justify-center aspect-21/9 border border-dashed border-outline/30 cursor-pointer hover:bg-gray-50 rounded-md transition-colors">
+            <label className="flex flex-col items-center justify-center aspect-21/9 border border-dashed border-gray-400 cursor-pointer hover:bg-gray-50 rounded-md transition-colors">
               <MdAddPhotoAlternate className="w-20 text-gray-600 h-20" />
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
                 Click to upload hero image
@@ -225,7 +230,7 @@ export function PostForm({ post }: { post?: ApiPost }) {
             value={alt}
             onChange={(e) => setAlt(e.target.value)}
             placeholder="Describe the hero image for accessibility..."
-            className="w-full focus:outline-none mt-3 bg-transparent border-0 border-b border-outline/30 focus:border-primary focus:ring-0 py-2 font-body text-sm text-primary placeholder:text-gray-400"
+            className="w-full focus:outline-none mt-3 bg-transparent border-0 border-b border-gray-500 focus:border-gray-500 focus:ring-0 py-2 font-body text-sm text-primary placeholder:text-gray-400"
           />
         </div>
 
@@ -242,7 +247,16 @@ export function PostForm({ post }: { post?: ApiPost }) {
 
         {/* Actions */}
         <div className="flex flex-wrap items-center gap-4 pt-6 border-t border-outline/10">
-          <Link href={post ? `/admin/dashboard/posts/${post._id}` : "/admin/dashboard/posts"} className={button}>Cancel</Link>
+          <Link
+            href={
+              post
+                ? `/admin/dashboard/posts/${post._id}`
+                : "/admin/dashboard/posts"
+            }
+            className={button}
+          >
+            Cancel
+          </Link>
           <button
             type="button"
             onClick={() => save("draft")}
@@ -257,7 +271,11 @@ export function PostForm({ post }: { post?: ApiPost }) {
             disabled={pending}
             className="px-10 py-3 bg-primary text-gray-100 rounded-sm text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-40"
           >
-            {pending ? "Publishing..." : post?.status === "published" ? "Save changes" : "Publish"}
+            {pending
+              ? "Publishing..."
+              : post?.status === "published"
+                ? "Save changes"
+                : "Publish"}
           </button>
         </div>
       </div>
