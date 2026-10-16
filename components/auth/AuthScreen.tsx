@@ -101,7 +101,11 @@ export function AuthScreen({ mode, admin = false }: { mode: Mode; admin?: boolea
         );
         if (response.data?.user)
           localStorage.setItem(admin ? "admin" : "user", JSON.stringify(response.data.user));
-        router.push(admin ? "/admin/dashboard" : "/posts");
+        const requestedPath = new URLSearchParams(window.location.search).get("redirect");
+        const safePath = requestedPath?.startsWith("/") && !requestedPath.startsWith("//")
+          ? requestedPath
+          : "/posts";
+        router.push(admin ? "/admin/dashboard" : safePath);
         router.refresh();
       }
     } catch (error) {

@@ -4,6 +4,7 @@ import { contentExcerpt } from "@/lib/post-content";
 export type Category = "News" | "Sports" | "Fashion" | "Tech" | "Science" | "Short Stories";
 
 export type Post = {
+  id: string;
   slug: string;
   title: string;
   excerpt: string;
@@ -13,10 +14,13 @@ export type Post = {
   image: string;
   imageAlt: string;
   isFeatured?: boolean;
+  likes: number;
+  commentCount: number;
 };
 
 export function toEditorialPost(post: ApiPost): Post {
   return {
+    id: post._id,
     slug: post.slug,
     title: post.title,
     excerpt: contentExcerpt(post.content?.content).slice(0, 180) || "Read the full story from Keazzy’s Curations.",
@@ -26,6 +30,8 @@ export function toEditorialPost(post: ApiPost): Post {
     image: post.heroImage?.src ?? images.news,
     imageAlt: post.heroImage?.alt ?? post.title,
     isFeatured: post.isFeatured ?? false,
+    likes: post.likes ?? 0,
+    commentCount: post.commentCount ?? 0,
   };
 }
 

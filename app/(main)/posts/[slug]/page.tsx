@@ -10,6 +10,7 @@ import { FiLink } from "react-icons/fi";
 import { CategoryLabel } from "@/components/editorial/CategoryLabel";
 import { NewsletterSignup } from "@/components/editorial/NewsletterSignup";
 import { Comments } from "@/components/posts/Comments";
+import { PostInteractions } from "@/components/posts/PostInteractions";
 import { RelatedPosts } from "@/components/posts/RelatedPosts";
 import { SiteContainer } from "@/components/site/SiteContainer";
 import { BACKEND_URL, getPublicPosts, type ApiPost } from "@/lib/backend";
@@ -57,6 +58,7 @@ export default async function ArticlePage({
         title: live.title,
         excerpt: contentExcerpt(live.content?.content).slice(0, 180),
         category: categoryName(live.category),
+        id: live._id,
         date: live.createdAt
           ? new Intl.DateTimeFormat("en", {
               month: "short",
@@ -67,6 +69,8 @@ export default async function ArticlePage({
         readingTime: `${live.readTime ?? 1} min read`,
         image: live.heroImage?.src ?? images.news,
         imageAlt: live.heroImage?.alt ?? live.title,
+        likes: live.likes ?? 0,
+        commentCount: live.commentCount ?? 0,
       };
   const related = (listing?.posts ?? [])
     .filter((item) => item.slug !== post.slug)
@@ -111,6 +115,7 @@ export default async function ArticlePage({
                     </span>
                   </div>
                 </div>
+                <PostInteractions postId={post.id} postSlug={post.slug} likes={post.likes} comments={post.commentCount} />
                 <div className="flex items-center gap-4 text-sm">
                   <span className="text-sm text-[#77736c]">Share:</span>
                   <FaFacebookF />

@@ -20,5 +20,5 @@ export function SiteFooter() {
 }
 
 function FooterColumn({ title, links }: { title: string; links: string[] }) {
-  return <div><h2 className="mb-2 font-serif text-sm">{title}</h2>{links.map((label) => <Link key={label} href={label === "Home" ? "/" : label === "All Posts" ? "/posts" : label === "About Us" ? "/about" : label === "Contact" ? "mailto:hello@keazzyscurations.com" : `/posts?category=${label.toLowerCase()}`} className="block text-[10px] leading-[1.7] text-[#ddd] hover:text-[#e6c98f]">{label}</Link>)}</div>;
+  return <div><h2 className="mb-2 font-serif text-sm">{title}</h2>{links.map((label) => <Link key={label} href={label === "Home" ? "/" : label === "All Posts" ? "/posts" : label === "About Us" ? "/about" : label === "Contact" ? "/contact" : `/posts?category=${label.toLowerCase()}`} className="block text-[10px] leading-[1.7] text-[#ddd] hover:text-[#e6c98f]">{label}</Link>)}</div>;
 }

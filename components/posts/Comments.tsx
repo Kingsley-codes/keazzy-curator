@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useEffectEvent, useState } from "react";
 import { requestJson, friendlyDate, ApiError } from "@/lib/backend";
 import {
@@ -32,17 +31,20 @@ export function Comments({
   admin?: boolean;
   onCountChange?: (count: number) => void;
 }) {
-  const router = useRouter();
   const [data, setData] = useState<CommentData | null>(null),
     [page, setPage] = useState(1),
     [revision, setRevision] = useState(0),
     [error, setError] = useState(""),
     [signedIn, setSignedIn] = useState(admin),
+    [authChecked, setAuthChecked] = useState(admin),
     [body, setBody] = useState(""),
     [replyTo, setReplyTo] = useState<Comment | null>(null),
     [pending, setPending] = useState(false);
   const base = `${admin ? "/api/admin/posts" : "/api/posts"}/${postId}/comments`;
-  const reportCount = useEffectEvent((count: number) => onCountChange?.(count));
+  const reportCount = useEffectEvent((count: number) => {
+    onCountChange?.(count);
+    window.dispatchEvent(new CustomEvent("post-comment-count", { detail: { postId, count } }));
+  });
   useEffect(() => {
     let active = true;
     requestJson<CommentData>(`${base}?page=${page}`)
@@ -67,14 +69,13 @@ export function Comments({
         if (active) setSignedIn(true);
       })
       .catch(() => {
-        if (!active) return;
-        setSignedIn(false);
-        router.replace("/login");
-      });
+        if (active) setSignedIn(false);
+      })
+      .finally(() => { if (active) setAuthChecked(true); });
     return () => {
       active = false;
     };
-  }, [admin, router]);
+  }, [admin]);
   async function send(event: React.FormEvent) {
     event.preventDefault();
     setPending(true);
@@ -90,7 +91,6 @@ export function Comments({
     } catch (err) {
       if (err instanceof ApiError && [401, 403].includes(err.status)) {
         setSignedIn(false);
-        router.replace(admin ? "/admin/login" : "/login");
         return;
       }
       setError(err instanceof Error ? err.message : "Could not post comment.");
@@ -165,7 +165,7 @@ export function Comments({
     </article>
   );
   return (
-    <section className="mt-12 border-t border-[#ded6c9] pt-8">
+    <section id="comments" className="mt-12 border-t border-[#ded6c9] pt-8">
       <h2 className="font-serif text-3xl font-semibold">
         Conversation {data ? `(${data.count})` : ""}
       </h2>
@@ -176,7 +176,7 @@ export function Comments({
       </p>
       <ErrorNotice message={error} />
       <div id={`comment-form-${postId}`} className="my-6">
-        {signedIn ? (
+        {!authChecked ? <p className="text-sm text-[#77736c]">Checking sign-in…</p> : signedIn ? (
           <form onSubmit={send} className="space-y-3">
             {replyTo && (
               <div className="flex items-center justify-between rounded bg-[#f6f0e6] p-3">
